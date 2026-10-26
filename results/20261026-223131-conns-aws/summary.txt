@@ -1,0 +1,15 @@
+  conns req/s each     asked  server              req/s    open   lat mean   lat max  cores       RSS per conn kernel TCP  client  failed  runs  net capped
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+   1000        max       max  slopio          1,724,106   1,000      568us    1.97ms   7.82    272.8M    10.8K       0.0M     51%       0     3            
+   1000        max       max  hyper-reuseport 1,198,699   1,000      828us    1.63ms   7.82     31.9M    29.2K       0.0M     38%       0     3            
+   1000        max       max  hyper-multi     1,018,182   1,000      978us    3.27ms   7.81     31.5M    29.3K       0.0M     34%       0     3            
+
+  10000        max       max  slopio          1,033,350  10,000     9.67ms   15.72ms   7.84    354.6M     9.5K      30.0M     40%       0     3            
+  10000        max       max  hyper-reuseport   708,779  10,000    14.09ms   19.87ms   7.82    266.1M    26.9K      11.0M     30%       0     3            
+  10000        max       max  hyper-multi       792,083  10,000    12.56ms   49.33ms   7.78    256.9M    26.0K      29.0M     34%       0     3            
+
+  50000        max       max  slopio            894,166  50,000    55.86ms  115.67ms   7.83    745.1M     9.9K     182.0M     44%       0     3            
+  50000        max       max  hyper-reuseport   592,447  50,000    84.37ms  111.24ms   7.87   1250.5M    25.5K      60.0M     29%       0     3            
+  50000        max       max  hyper-multi       711,890  50,000    70.14ms  253.59ms   7.82   1247.4M    25.5K     184.0M     34%       0     3            
+
+Medians of each case's runs; runs: how many there were, fewer when some were left out (see below). asked: connections times the rate each, what h2load aimed for; max: each connection sends its next request as soon as it has the answer. open: connections established, read half way through. cores: the server's CPU time per second. RSS: the server's resident memory under the load; per conn: what it grew by from idle, over the connections open. kernel TCP: what the machine's TCP buffers grew by, both ends if the client runs there too. client: the load generator's CPUs. Latency at a fixed rate: h2load sends every connection's request at the same instant, so it is the time to answer a burst of as many requests as there are connections.

@@ -68,6 +68,61 @@ of its 8 cores. `results/20261026-210343-multi-aws` keeps that run, marked
 One core at 16 × 16, several at 64 × 32. Both scale near linearly from 1 to
 8 cores; the ratio stays at about 2.2×.
 
+## Many connections, on AWS
+
+`bench/bench.sh conns`: N connections, each sending one request at a time.
+
+### As fast as they can, 8 cores
+
+Both on a `c8gn.8xlarge` (64 GiB, 100 Gbit/s), the servers on 8 of its CPUs;
+each connection sends its next request as soon as it has the answer.
+`results/20261026-223131-conns-aws`.
+
+| connections | slopio        | hyper reuseport | hyper multi   | memory at 50,000: slopio / hyper |
+|-------------|---------------|-----------------|---------------|----------------------------------|
+| 1,000       | **1.72M req/s** | 1.20M (1.44×)   | 1.02M (1.69×) |                                  |
+| 10,000      | **1.03M**     | 709k (1.46×)    | 792k (1.30×)  |                                  |
+| 50,000      | **894k**      | 592k (1.51×)    | 712k (1.26×)  | 745 MiB / 1.25 GiB               |
+
+Every server used 7.8 of its 8 cores, h2load at most 51 % of its own; no
+request failed, no run was capped. With one request in flight per
+connection there is little left to batch per connection: slopio did 4.84M
+req/s on the same cores with 64 connections of 32 streams, 1.72M with 1,000
+of one. That is where its lead was largest, hence the smaller gap here.
+hyper's `multi` mode overtakes `reuseport` from 10,000 connections.
+
+### At a fixed rate, one core
+
+The server on a `c8gn.medium` (1 vCPU, 1.8 GiB), h2load on a
+`c8gn.xlarge`; both get the same load, N connections at so many requests a
+second each. `results/20261026-214840-conns-aws`,
+`results/20261026-221046-conns-aws`.
+
+| connections × req/s each | slopio                          | hyper                                 |
+|--------------------------|---------------------------------|---------------------------------------|
+| 10,000 × 1               | 124 MiB, 0.09 core              | 224 MiB, 0.12 core                    |
+| 50,000 × 1               | 522 MiB, 0.53 core              | 1.12 GiB, 0.71 core                   |
+| 1,000 × 200              | 200k req/s, 0.72 core           | 156k, core saturated                  |
+| 10,000 × 20              | 200k req/s, 0.88 core           | 141k, core saturated                  |
+| 50,000 × 4               | 167k, saturated, 752 MiB        | 113k, saturated, 1.33 GiB; killed by the kernel for want of memory on the next run |
+
+Per connection, slopio's memory grew by ~10 KiB, hyper's by ~23 KiB.
+h2load sends every connection's request at the same instant at a fixed
+rate, so the latency there is that of answering a burst of N, and is left
+out here; it is in the summaries.
+
+### Not explained yet
+
+- **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a
+  second, in 2 of 3 runs, a few requests on connections long established
+  waited 18.4 to 18.8 s; hyper's worst was 0.64 s. The server logged
+  nothing. One guess, unverified: the 50,000 requests of each second
+  arrive together and empty the 128-entry receive ring, and some
+  connections are slow to resume.
+- **h2load hangs** when a connection is made after its measured time has
+  ended: it never stops it, and waits on it for ever. `bench.sh` gives
+  large runs a longer warm-up and kills h2load past its time.
+
 ## Locally (10-CPU aarch64 VM, loopback)
 
 `results/20261026-195722-single-vm`, `results/20261026-200200-multi-vm`.
