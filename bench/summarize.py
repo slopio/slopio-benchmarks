@@ -74,7 +74,7 @@ def summarize_conns(path):
         return statistics.median(float(r[field]) for r in rows)
 
     header = (
-        f"{'conns':>7} {'req/s each':>10} {'asked':>9}  {'server':<8}"
+        f"{'conns':>7} {'req/s each':>10} {'asked':>9}  {'server':<15}"
         f" {'req/s':>9} {'open':>7}  {'lat mean':>9} {'lat max':>9}"
         f"  {'cores':>5}  {'RSS':>8} {'per conn':>8}"
         f" {'kernel TCP':>10}  {'client':>6}  {'failed':>6}  {'runs':>4}  {'net capped':>10}"
@@ -101,7 +101,7 @@ def summarize_conns(path):
         failed = sum(int(r["failed"]) + int(r["errored"]) for r in rows)
         capped = sum(int(r.get("nic_exceeded") or 0) > 0 for r in rows)
         print(
-            f"{n:>7} {rate:>10} {f'{asked(n, rate):,}' if asked(n, rate) else 'max':>9}  {server:<8}"
+            f"{n:>7} {rate:>10} {f'{asked(n, rate):,}' if asked(n, rate) else 'max':>9}  {server:<15}"
             f" {median(rows, 'rps'):>9,.0f} {open_:>7,.0f}"
             f"  {duration(median(rows, 'lat_mean_us')):>9} {duration(median(rows, 'lat_max_us')):>9}"
             f"  {median(rows, 'server_cores'):>5.2f}"
@@ -119,9 +119,10 @@ def summarize_conns(path):
         " second. RSS: the server's resident memory under the load; per conn:"
         " what it grew by from idle, over the connections open. kernel TCP:"
         " what the machine's TCP buffers grew by, both ends if the client runs"
-        " there too. client: the load generator's CPUs. Latency: h2load"
-        " sends every connection's request at the same instant, so it is the"
-        " time to answer a burst of as many requests as there are connections."
+        " there too. client: the load generator's CPUs. Latency at a fixed rate:"
+        " h2load sends every connection's request at the same instant, so it is"
+        " the time to answer a burst of as many requests as there are"
+        " connections."
     )
 
 

@@ -3,8 +3,8 @@
 #
 #   bench/bench.sh single [local|aws]   # each server on one thread, on CPU 0
 #   bench/bench.sh multi [local|aws]    # one worker per CPU, on CPUs 0..N-1
-#   bench/bench.sh conns [local|aws]    # one thread, many connections at a
-#                                       # fixed rate each
+#   bench/bench.sh conns [local|aws]    # many connections at a fixed rate
+#                                       # each, or as fast as they can
 #
 # single and multi give each server all the load it can take: each is
 # measured at its own peak. conns gives both the same load, N connections
@@ -20,9 +20,11 @@
 # raw.csv, summary.txt, env.txt, and every h2load output under raw/.
 #
 # Environment:
-#   SERVER_CPUS  default 0 (single); 0..N-1 (multi), N half this machine's
-#                CPUs (local) or all the server's (aws). Must start at 0:
-#                slopio's runtime pins worker n to CPU n whatever the mask.
+#   SERVER_CPUS  default 0 (single, conns); 0..N-1 (multi), N half this
+#                machine's CPUs (local) or all the server's (aws). Must start
+#                at 0: slopio's runtime pins worker n to CPU n whatever the
+#                mask. conns on more than CPU 0 runs one worker per CPU, and
+#                hyper in both its modes, as multi does.
 #   CLIENT_CPUS  default the CPUs after SERVER_CPUS (local), all of the
 #                client's (aws).
 #   CLIENT_THREADS  h2load threads, at most one per connection; default 4
@@ -126,6 +128,13 @@ if [[ ! $server_cpus =~ ^0(-([0-9]+))?$ ]]; then
     echo "SERVER_CPUS=$server_cpus: must be 0 or 0-N, slopio pins worker n to CPU n" >&2
     exit 2
 fi
+# conns on more than one CPU runs the servers as multi does: one worker per
+# CPU, and hyper in both its modes.
+per_core=
+if [[ $mode == multi || ($mode == conns && $server_cpus != 0) ]]; then
+    per_core=PER_CORE=1
+    [[ $mode == conns ]] && servers=${SERVERS:-"slopio hyper-reuseport hyper-multi"}
+fi
 server_last=${BASH_REMATCH[2]:-0}
 if [[ $where == local ]]; then
     client_cpus=${CLIENT_CPUS:-$((server_last + 1))-$((client_ncpu - 1))}
@@ -169,8 +178,6 @@ server_bin() {
     esac
 }
 server_env() {
-    local per_core=
-    [[ $mode == multi ]] && per_core=PER_CORE=1
     case $1 in
         slopio | hyper) echo "$per_core" ;;
         hyper-reuseport) echo "$per_core TOKIO_MODE=reuseport" ;;
