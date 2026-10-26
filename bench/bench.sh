@@ -37,8 +37,9 @@
 #   SERVERS      which to run, default all of the mode's: slopio hyper
 #                (single, conns); slopio hyper-reuseport hyper-multi (multi).
 #   DURATION     seconds measured per run, default 8 (10 for conns).
-#   WARMUP       seconds of load before each measured run, default 2 (10 for
-#                conns, for all the connections to be made).
+#   WARMUP       seconds of load before each measured run, default 2. For
+#                conns 10, or one per 2,500 connections if that is longer,
+#                for all the connections to be made first.
 #   REPS         repetitions, default 3.
 #   PORT         default 18080.
 #   SKIP_BUILD   set to use the binaries already in target/release.
@@ -333,13 +334,17 @@ run_conns() {
     idle=$(on_server "$agent mem $pid $port")
 
     # h2load makes its connections all at once, then sends. The warm-up is
-    # left out of its figures and out of the server's CPU time below. Up to
-    # 8 streams per connection, so that one slow answer does not hold the
-    # rate back.
-    on_client "ulimit -n \$(ulimit -Hn); taskset -c $client_cpus h2load -t $threads -c $conns -m 8 --rps $rate --warm-up-time ${warmup}s -D $duration $url" \
+    # left out of its figures and out of the server's CPU time below, and
+    # grows with the connections: past the listen backlog, handshakes are
+    # retried, and the last of 50,000 took 10 s. A connection made after the
+    # measured time has ended is never stopped, and h2load waits on it for
+    # ever: the timeout ends that. Up to 8 streams per connection, so that
+    # one slow answer does not hold the rate back.
+    local run_warmup=$((conns / 2500 > warmup ? conns / 2500 : warmup))
+    on_client "ulimit -n \$(ulimit -Hn); timeout -s KILL $((run_warmup + duration + 30)) taskset -c $client_cpus h2load -t $threads -c $conns -m 8 --rps $rate --warm-up-time ${run_warmup}s -D $duration $url" \
         > "$out/raw/$tag.h2load.txt" 2>&1 &
     local load=$!
-    sleep "$warmup"
+    sleep "$run_warmup"
 
     local before after during peak nic_before nic_after
     nic_before=$(on_server "$agent nic")
@@ -362,6 +367,10 @@ run_conns() {
     on_server "$agent stop $pid"
     on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
 
+    if ! grep -q "^finished in" "$out/raw/$tag.h2load.txt"; then
+        echo "$tag: h2load printed no figures (killed after hanging?); run left out" >&2
+        return
+    fi
     python3 -I "$root/bench/parse_conns.py" "$out/raw/$tag.h2load.txt" "$out/raw/$tag.mpstat.txt" \
         "$before" "$after" "$nic_before" "$nic_after" "$idle" "$during" "$peak" \
         "$name" "$conns" "$rate" "$rep" >> "$out/raw.csv"
