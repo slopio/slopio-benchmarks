@@ -2,7 +2,10 @@
 
 Benchmarks of the [slopio-h2](https://github.com/slopio/slopio-h2) HTTP/2
 server, built on the [slopio](https://github.com/slopio) io_uring runtime,
-against other HTTP/2 servers answering the same routes.
+against other HTTP/2 servers answering the same route.
+
+What was measured so far, and why the numbers are what they are:
+[RESULTS.md](RESULTS.md).
 
 ## The servers
 
