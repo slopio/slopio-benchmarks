@@ -90,7 +90,7 @@ Both servers read these:
 
 | Variable        | Default      | Meaning                                              |
 |-----------------|--------------|------------------------------------------------------|
-| `RING`          | `64x128+512` | Receive buffer ring: `64x128+512`, `64x256+512`, `64x512`, `64x4096`, `16x2048`, `16x4096`. |
+| `RING`          | `64x128+512` | Receive buffers per worker, KiB × count [+ reserve]: `64x128+512`, `64x256+512`, `64x512`, `64x4096`, `16x2048`, `16x4096`, `16x16384`, `4x8192`, `4x16384`. |
 | `ZERO_COPY`     | unset        | Send with `SEND_ZC`.                                 |
 | `BODY_MIN_RATE` | `256`        | Slowest request body tolerated, bytes/s; `0` disables it. |
 

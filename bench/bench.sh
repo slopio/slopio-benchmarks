@@ -44,6 +44,8 @@
 #                for all the connections to be made first.
 #   REPS         repetitions, default 3.
 #   PORT         default 18080.
+#   SERVER_ENV   more VAR=value for every server, e.g. RING=4x16384 for
+#                slopio's receive buffers; recorded in env.txt.
 #   SKIP_BUILD   set to use the binaries already in target/release.
 
 set -euo pipefail
@@ -222,6 +224,7 @@ mkdir -p "$out/raw"
     echo "client threads: $client_threads (at most one per connection)"
     echo "configs: $configs"
     echo "servers: $servers"
+    echo "server environment: ${SERVER_ENV:-none}"
     echo "duration: ${duration}s, warmup: ${warmup}s, reps: $reps"
     echo "server machine:"
     on_server "$agent info"
@@ -257,7 +260,7 @@ run_one() {
     local url="http://$target_ip:$port/"
 
     local pid
-    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name")")
+    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
     if ! on_server "$agent listening $port"; then
         on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
         echo "$tag: the server never listened, see $out/raw/$tag.server.log" >&2
@@ -331,7 +334,7 @@ run_conns() {
     local url="http://$target_ip:$port/"
 
     local pid
-    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name")")
+    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
     if ! on_server "$agent listening $port"; then
         on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
         echo "$tag: the server never listened, see $out/raw/$tag.server.log" >&2

@@ -47,8 +47,14 @@ runtime::define_buf_ring!(Ring64x512, bgid = 1, buffer_size = 65536, ring_size =
 runtime::define_buf_ring!(Ring64x4096, bgid = 1, buffer_size = 65536, ring_size = 4096);
 runtime::define_buf_ring!(Ring16x2048, bgid = 1, buffer_size = 16384, ring_size = 2048);
 runtime::define_buf_ring!(Ring16x4096, bgid = 1, buffer_size = 16384, ring_size = 4096);
+runtime::define_buf_ring!(Ring16x16384, bgid = 1, buffer_size = 16384, ring_size = 16384);
+// Many small buffers, for many connections each receiving little at a time:
+// a receive holds a whole buffer, however few bytes it carries.
+runtime::define_buf_ring!(Ring4x8192, bgid = 1, buffer_size = 4096, ring_size = 8192);
+runtime::define_buf_ring!(Ring4x16384, bgid = 1, buffer_size = 4096, ring_size = 16384);
 
-const RINGS: &str = "64x128+512, 64x256+512, 64x512, 64x4096, 16x2048, 16x4096";
+const RINGS: &str =
+    "64x128+512, 64x256+512, 64x512, 64x4096, 16x2048, 16x4096, 16x16384, 4x8192, 4x16384";
 
 #[derive(Clone, Copy)]
 struct Config {
@@ -88,6 +94,9 @@ fn main() {
         "64x4096" => start::<Ring64x4096>(config, per_core),
         "16x2048" => start::<Ring16x2048>(config, per_core),
         "16x4096" => start::<Ring16x4096>(config, per_core),
+        "16x16384" => start::<Ring16x16384>(config, per_core),
+        "4x8192" => start::<Ring4x8192>(config, per_core),
+        "4x16384" => start::<Ring4x16384>(config, per_core),
         other => panic!("unknown RING `{other}`: {RINGS}"),
     }
 }
