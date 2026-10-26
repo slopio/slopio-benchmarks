@@ -1,0 +1,12 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed
+-----------------------------------------------------------------------------------------------------------------------
+          1 x 1  slopio                31,745     ±5%       30us    7.71ms          0.36     25/75           4%       0
+          1 x 1  hyper                 31,300     ±5%       30us    1.89ms          0.35     29/71           4%       0
+
+        16 x 16  slopio             1,039,668     ±2%      224us    4.71ms          1.00     53/47          14%       0
+        16 x 16  hyper                317,208     ±5%      803us    7.07ms          1.00     38/61           7%       0
+
+        64 x 32  slopio             1,331,272     ±5%     1.45ms    9.50ms          1.00     64/36          14%       0
+        64 x 32  hyper                346,360     ±2%     6.01ms   13.77ms          1.00     41/59           7%       0
+
+Medians of 3 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs.

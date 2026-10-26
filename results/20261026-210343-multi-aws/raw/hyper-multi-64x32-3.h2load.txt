@@ -1,0 +1,206 @@
+starting benchmark...
+spawning thread #0: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #1: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #2: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #3: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #4: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #5: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #6: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #7: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #8: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #9: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #10: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #11: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #12: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #13: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #14: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #15: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #16: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #17: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #18: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #19: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #20: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #21: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #22: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #23: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #24: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #25: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #26: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #27: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #28: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #29: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #30: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+spawning thread #31: 2 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+Warm-up started for thread #28.
+Warm-up started for thread #30.
+Warm-up started for thread #7.
+Warm-up phase is over for thread #28.
+Main benchmark duration is started for thread #28.
+Warm-up phase is over for thread #30.
+Main benchmark duration is started for thread #30.
+Warm-up started for thread #31.
+Warm-up phase is over for thread #7.
+Main benchmark duration is started for thread #7.
+Warm-up started for thread #14.
+Warm-up phase is over for thread #31.
+Main benchmark duration is started for thread #31.
+Warm-up started for thread #18.
+Warm-up phase is over for thread #14.
+Main benchmark duration is started for thread #14.
+Warm-up phase is over for thread #18.
+Main benchmark duration is started for thread #18.
+Warm-up started for thread #25.
+Warm-up phase is over for thread #Warm-up started for thread #250..
+
+Main benchmark duration is started for thread #25.
+progress: 50% of clients started
+Warm-up started for thread #15.
+progress: 100% of clients started
+Warm-up phase is over for thread #0.
+Main benchmark duration is started for thread #0.
+Warm-up started for thread #1.
+Warm-up phase is over for thread #15.
+Main benchmark duration is started for thread #15.
+Warm-up phase is over for thread #1.
+Main benchmark duration is started for thread #1.
+Warm-up started for thread #17.
+Application protocol: h2c
+Warm-up started for thread #21.
+Warm-up phase is over for thread #21.
+Main benchmark duration is started for thread #21.
+Warm-up phase is over for thread #17.
+Main benchmark duration is started for thread #17.
+Warm-up started for thread #22.
+Warm-up started for thread #12.
+Warm-up started for thread #26.
+Warm-up phase is over for thread #22.
+Main benchmark duration is started for thread #22.
+Warm-up phase is over for thread #12.
+Main benchmark duration is started for thread #12.
+Warm-up started for thread #10.
+Warm-up started for thread #9.
+Warm-up started for thread #3.
+Warm-up started for thread #13.
+Warm-up started for thread #4.
+Warm-up started for thread #2.
+Warm-up started for thread #27.
+Warm-up started for thread #16.
+Warm-up started for thread #19.
+Warm-up started for thread #5.
+Warm-up started for thread #23.
+Warm-up started for thread #20.
+Warm-up started for thread #6.
+Warm-up started for thread #24.
+Warm-up started for thread #29.
+Warm-up started for thread #11.
+Warm-up started for thread #8.
+Warm-up phase is over for thread #27.
+Warm-up phase is over for thread #Warm-up phase is over for thread #Warm-up phase is over for thread #Warm-up phase is over for thread #9.Warm-up phase is over for thread #1629.
+25Warm-up phase is over for thread #.Warm-up phase is over for thread #
+23Warm-up phase is over for thread #Warm-up phase is over for thread #Warm-up phase is over for thread #Warm-up phase is over for thread #Main benchmark duration is started for thread #19..Main benchmark duration is started for thread #11..29.
+20Main benchmark duration is started for thread #54.
+
+Warm-up phase is over for thread #6.
+Main benchmark duration is started for thread #6.
+Warm-up phase is over for thread #8.
+Main benchmark duration is started for thread #8.
+27.26
+..Warm-up phase is over for thread #Main benchmark duration is started for thread #4Warm-up phase is over for thread #.
+
+10..
+Warm-up phase is over for thread #.
+
+
+Main benchmark duration is started for thread #20.
+
+
+Main benchmark duration is started for thread #23
+Warm-up phase is over for thread #24
+.Main benchmark duration is started for thread #Main benchmark duration is started for thread #Main benchmark duration is started for thread #1316.
+19Main benchmark duration is started for thread #..32.
+
+
+9Main benchmark duration is started for thread #.
+.Main benchmark duration is started for thread #13.
+11.
+Main benchmark duration is started for thread #3.
+Main benchmark duration is started for thread #Main benchmark duration is started for thread #26
+24.
+.
+
+Main benchmark duration is started for thread #.10
+.
+Main benchmark duration is over for thread #18. Stopping all clients.
+Stopped all clients for thread #18
+Main benchmark duration is over for thread #7. Stopping all clients.
+Stopped all clients for thread #7
+Main benchmark duration is over for thread #30. Stopping all clients.
+Stopped all clients for thread #30
+Main benchmark duration is over for thread #15. Stopping all clients.
+Stopped all clients for thread #15
+Main benchmark duration is over for thread #0. Stopping all clients.
+Stopped all clients for thread #0
+Main benchmark duration is over for thread #28. Stopping all clients.
+Stopped all clients for thread #28
+Main benchmark duration is over for thread #21. Stopping all clients.
+Stopped all clients for thread #21
+Main benchmark duration is over for thread #Main benchmark duration is over for thread #17. Stopping all clients.31. Stopping all clients.
+
+Stopped all clients for thread #31Stopped all clients for thread #17
+
+Main benchmark duration is over for thread #1Main benchmark duration is over for thread #. Stopping all clients.
+Stopped all clients for thread #1
+25. Stopping all clients.
+Stopped all clients for thread #25
+Main benchmark duration is over for thread #22. Stopping all clients.
+Stopped all clients for thread #22
+Main benchmark duration is over for thread #14. Stopping all clients.
+Stopped all clients for thread #14
+Main benchmark duration is over for thread #12. Stopping all clients.
+Stopped all clients for thread #12
+Main benchmark duration is over for thread #29. Stopping all clients.
+Stopped all clients for thread #29
+Main benchmark duration is over for thread #27. Stopping all clients.
+Stopped all clients for thread #27
+Main benchmark duration is over for thread #3. Stopping all clients.
+Main benchmark duration is over for thread #Stopped all clients for thread #3Main benchmark duration is over for thread #24. Stopping all clients.
+2Main benchmark duration is over for thread #13Main benchmark duration is over for thread #9. Stopping all clients.
+Main benchmark duration is over for thread #8Stopped all clients for thread #9
+. Stopping all clients.
+
+Stopped all clients for thread #13
+Stopped all clients for thread #24
+. Stopping all clients.
+Stopped all clients for thread #2
+. Stopping all clients.
+Main benchmark duration is over for thread #Stopped all clients for thread #118. Stopping all clients.Main benchmark duration is over for thread #
+
+26. Stopping all clients.Main benchmark duration is over for thread #
+Stopped all clients for thread #11
+Main benchmark duration is over for thread #Stopped all clients for thread #26
+10Main benchmark duration is over for thread #. Stopping all clients.20. Stopping all clients.
+
+6. Stopping all clients.
+Main benchmark duration is over for thread #19. Stopping all clients.
+Stopped all clients for thread #19
+Stopped all clients for thread #6
+Stopped all clients for thread #10
+Stopped all clients for thread #20
+Main benchmark duration is over for thread #16. Stopping all clients.
+Stopped all clients for thread #16
+Main benchmark duration is over for thread #23. Stopping all clients.
+Stopped all clients for thread #23
+Main benchmark duration is over for thread #5. Stopping all clients.
+Stopped all clients for thread #5
+Main benchmark duration is over for thread #4. Stopping all clients.
+Stopped all clients for thread #4
+
+finished in 8.01s, 1480024.88 req/s, 2.86GB/s
+requests: 11840199 total, 11842247 started, 11840199 done, 11840199 succeeded, 0 failed, 0 errored, 0 timeout
+status codes: 11840216 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 22.87GB (24556577683) total, 90.33MB (94722240) headers (space savings 84.00%), 22.58GB (24248728179) data
+                     min         max         mean         sd        +/- sd
+time for request:       47us      5.86ms      1.37ms       716us    66.02%
+time for connect:       17us       487us       168us       116us    75.00%
+time to 1st byte:      411us      1.86ms       913us       346us    64.06%
+req/s           :   22638.44    23683.44    23124.96      279.18    57.81%

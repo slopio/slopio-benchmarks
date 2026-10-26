@@ -1,0 +1,19 @@
+starting benchmark...
+spawning thread #0: 1 total client(s). Timing-based test with 0s of warm-up time and 8s of main duration for measurements.
+Warm-up started for thread #0.
+progress: 100% of clients started
+Warm-up phase is over for thread #0.
+Main benchmark duration is started for thread #0.
+Application protocol: h2c
+Main benchmark duration is over for thread #0. Stopping all clients.
+Stopped all clients for thread #0
+
+finished in 8.00s, 31300.25 req/s, 61.91MB/s
+requests: 250402 total, 250403 started, 250402 done, 250402 succeeded, 0 failed, 0 errored, 0 timeout
+status codes: 250402 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 495.28MB (519333811) total, 1.91MB (2003224) headers (space savings 84.00%), 489.07MB (512823296) data
+                     min         max         mean         sd        +/- sd
+time for request:       10us      5.33ms        30us        23us    91.87%
+time for connect:       20us        20us        20us         0us   100.00%
+time to 1st byte:      175us       175us       175us         0us   100.00%
+req/s           :   31299.86    31299.86    31299.86        0.00   100.00%

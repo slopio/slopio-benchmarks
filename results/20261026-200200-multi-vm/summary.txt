@@ -1,0 +1,15 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed
+-----------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio             1,235,784     ±4%      178us    3.96ms          2.28     44/56          46%       0
+        16 x 16  hyper-reuseport    1,059,121    ±12%      222us    6.56ms          4.15     36/64          50%       0
+        16 x 16  hyper-multi          666,172     ±0%      368us    5.19ms          4.35     44/56          43%       0
+
+        64 x 32  slopio             4,956,639     ±5%      255us    6.62ms          4.36     67/33          97%       0
+        64 x 32  hyper-reuseport    1,384,765     ±2%     1.45ms   11.09ms          4.98     38/62          54%       0
+        64 x 32  hyper-multi          963,382     ±0%     2.09ms   18.02ms          4.89     48/52          52%       0
+
+       256 x 16  slopio             4,007,584    ±10%      579us    9.96ms          4.58     65/35          99%       0
+       256 x 16  hyper-reuseport    1,219,765     ±6%     3.34ms   18.70ms          4.98     40/60          56%       0
+       256 x 16  hyper-multi          900,910     ±1%     4.52ms   46.01ms          4.94     48/52          59%       0
+
+Medians of 3 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs.
