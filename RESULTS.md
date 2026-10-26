@@ -111,14 +111,38 @@ h2load sends every connection's request at the same instant at a fixed
 rate, so the latency there is that of answering a burst of N, and is left
 out here; it is in the summaries.
 
+### slopio's receive buffers make no difference at 50,000 connections
+
+slopio alone, as fast as 50,000 connections can go on 8 cores of a
+`c8gn.8xlarge`, with each of six receive rings per worker
+(`results/20261026-231455-conns-aws` to `20261026-232315-conns-aws`):
+
+| `RING`        | buffers | req/s | µs per request, user + kernel | memory  |
+|---------------|---------|-------|-------------------------------|---------|
+| `64x128+512`  | 640     | 888k  | 3.81 + 5.05                   | 742 MiB |
+| `4x8192`      | 8,192   | 885k  | 3.83 + 5.07                   | 733 MiB |
+| `4x16384`     | 16,384  | 888k  | 3.79 + 5.02                   | 990 MiB |
+| `16x4096`     | 4,096   | 870k  | 3.89 + 5.15                   | 986 MiB |
+| `16x16384`    | 16,384  | 885k  | 3.82 + 5.06                   | 2.5 GiB |
+| `64x4096`     | 4,096   | 881k  | 3.84 + 5.09                   | 2.5 GiB |
+
+All within 2 %. A buffer is held from the moment data lands to the moment it
+is decoded, not while a receive waits; with one request in flight per
+connection, arriving spread out, few are in use at once. Where the 8.9 µs
+per request go at 50,000 connections, against 1.6 at 64, is for a profile
+to say.
+
 ### Not explained yet
 
 - **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a
   second, in 2 of 3 runs, a few requests on connections long established
   waited 18.4 to 18.8 s; hyper's worst was 0.64 s. The server logged
-  nothing. One guess, unverified: the 50,000 requests of each second
-  arrive together and empty the 128-entry receive ring, and some
-  connections are slow to resume.
+  nothing. One guess, unverified: at a fixed rate the 50,000 requests of
+  each second arrive together and can empty the receive ring, and a
+  connection that finds it empty waits in 10 ms sleeps with no order among
+  them (`DryRing` in slopio-h2). It does not cost throughput when requests
+  arrive spread out (above); whether it causes the stalls needs the
+  fixed-rate run again with `RING=4x16384`.
 - **h2load hangs** when a connection is made after its measured time has
   ended: it never stops it, and waits on it for ever. `bench.sh` gives
   large runs a longer warm-up and kills h2load past its time.
