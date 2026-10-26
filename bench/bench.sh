@@ -210,7 +210,7 @@ for p in lock["package"]:
 EOF
 } > "$out/env.txt"
 
-echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded" > "$out/raw.csv"
+echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
 
 run_one() {
     local name=$1 conns=$2 streams=$3 rep=$4
@@ -272,12 +272,15 @@ idle = [float(l.split()[-1]) for l in open(mpstat)
         if l.startswith("Average") and l.split()[1].isdigit()]
 client = 100 - sum(idle) / len(idle)
 nb, na = counters(nic_before), counters(nic_after)
-nic = sum(na[k] - nb.get(k, 0) for k in na)
+grew = {k: na[k] - nb.get(k, 0) for k in na if na[k] > nb.get(k, 0)}
+nic = sum(grew.values())
+# Which limit it was: bandwidth out or in, packets per second, connections.
+detail = " ".join(f"{k.removesuffix('_allowance_exceeded')}={v}" for k, v in grew.items())
 print(",".join([name, conns, streams, rep, rps, *req,
                 f"{us(lat[2]):.0f}", f"{us(lat[1]):.0f}", f"{us(lat[3]):.0f}",
                 f"{user + system:.2f}",
                 f"{100 * user / (user + system):.0f}", f"{100 * system / (user + system):.0f}",
-                f"{client:.0f}", str(nic)]))
+                f"{client:.0f}", str(nic), detail]))
 EOF
     tail -1 "$out/raw.csv"
 }
