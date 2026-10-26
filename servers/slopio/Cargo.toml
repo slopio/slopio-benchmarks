@@ -1,0 +1,16 @@
+[package]
+name = "slopio-server"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+# Off: the server is HTTP only, and each request goes straight to the HTTP
+# router rather than through the gRPC dispatch first.
+grpc = ["slopio-h2/grpc", "dep:bytes", "dep:prost"]
+
+[dependencies]
+bytes = { version = "1", optional = true }
+http = "1"
+prost = { version = "0.14", features = ["derive"], optional = true }
+runtime = { git = "ssh://git@github.com/saucisoupe/runtime.git" }
+slopio-h2 = { git = "ssh://git@github.com/slopio/slopio-h2.git", default-features = false }

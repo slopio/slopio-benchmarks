@@ -1,0 +1,17 @@
+// gRPC's own example, as ghz's documentation and slopio-h2's `grpc_load`
+// call it.
+syntax = "proto3";
+
+package helloworld;
+
+service Greeter {
+  rpc SayHello(HelloRequest) returns (HelloReply);
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}

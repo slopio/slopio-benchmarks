@@ -1,6 +1,10 @@
-[package]
-name = "slopio-benchmarks"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "3"
+members = ["servers/slopio", "servers/hyper"]
 
-[dependencies]
+# One profile for every Rust server, so that none is built better than another.
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"
+

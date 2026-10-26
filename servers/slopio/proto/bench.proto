@@ -1,0 +1,40 @@
+// What slopio-server answers over gRPC, for clients that need the schema:
+// ghz, grpcurl, or a client generated from it. The server itself does not
+// generate code from this file; its messages are written by hand in
+// src/grpc.rs and must stay in step with it.
+syntax = "proto3";
+
+package slopio.bench.v1;
+
+// One method per kind of gRPC call. Every response carries `response_size`
+// bytes of payload, after waiting `delay_ms` if asked to.
+service Bench {
+  // One request, one response.
+  rpc Unary(Request) returns (Response);
+  // One request, `response_count` responses.
+  rpc ServerStream(Request) returns (stream Response);
+  // Every request read, then one response with what was received; its
+  // `response_size` and `delay_ms` come from the last request.
+  rpc ClientStream(stream Request) returns (Response);
+  // Each request answered as it arrives: ping-pong on one stream.
+  rpc Bidi(stream Request) returns (stream Response);
+}
+
+message Request {
+  // Sent for its size only: the server reads it and drops it.
+  bytes payload = 1;
+  // Bytes of payload in each response, at most 4 MiB.
+  uint32 response_size = 2;
+  // ServerStream only: how many responses, 1 to 1 048 576; 0 is taken as 1.
+  uint32 response_count = 3;
+  // Wait before each response, at most 60 000 ms, in steps of 10 ms.
+  uint32 delay_ms = 4;
+}
+
+message Response {
+  bytes payload = 1;
+  // Payload bytes received so far on this call.
+  uint64 received_bytes = 2;
+  // Requests received so far on this call.
+  uint64 received_messages = 3;
+}

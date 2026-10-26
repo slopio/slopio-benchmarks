@@ -1,0 +1,17 @@
+[package]
+name = "hyper-server"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bytes = "1"
+http = "1"
+http-body = "1"
+hyper = { version = "1", features = ["http2", "server"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+libc = "0.2"
+# The allocator slopio's runtime installs, with its features, so that neither
+# server is measured on a different allocator.
+mimalloc = { version = "0.1", features = ["local_dynamic_tls", "v3"] }
+socket2 = { version = "0.6", features = ["all"] }
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "net", "time"] }
