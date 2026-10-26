@@ -30,14 +30,14 @@ for sg in $(aws_ ec2 describe-security-groups \
     echo "deleting security group $sg"
     # Network interfaces are released a little after termination.
     for _ in $(seq 12); do
-        aws_ ec2 delete-security-group --group-id "$sg" 2> /dev/null && break
+        aws_ ec2 delete-security-group --group-id "$sg" > /dev/null 2>&1 && break
         sleep 5
     done
 done
 
 if aws_ ec2 describe-key-pairs --key-names "$PROJECT" > /dev/null 2>&1; then
     echo "deleting key pair $PROJECT"
-    aws_ ec2 delete-key-pair --key-name "$PROJECT"
+    aws_ ec2 delete-key-pair --key-name "$PROJECT" > /dev/null
 fi
 
 rm -f "$HOSTS" "$STATE/known_hosts" "$STATE/user-data.sh" "$SSH_KEY" "$SSH_KEY.pub"
