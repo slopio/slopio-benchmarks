@@ -1,0 +1,76 @@
+starting benchmark...
+spawning thread #0: 223 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #1: 223 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #2: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #3: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #4: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #5: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #6: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #7: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+spawning thread #8: 222 total client(s). Timing-based test with 5s of warm-up time and 5s of main duration for measurements.
+Warm-up started for thread #2.
+Warm-up started for thread #7.
+Warm-up started for thread #4.
+Warm-up started for thread #8.
+Warm-up started for thread #0.
+Warm-up started for thread #5.
+Warm-up started for thread #6.
+Warm-up started for thread #1.
+Warm-up started for thread #3.
+progress: 9% of clients started
+progress: 19% of clients started
+progress: 29% of clients started
+progress: 39% of clients started
+progress: 49% of clients started
+progress: 59% of clients started
+progress: 69% of clients started
+progress: 78% of clients started
+progress: 88% of clients started
+progress: 98% of clients started
+Application protocol: h2c
+Warm-up phase is over for thread #2.
+Main benchmark duration is started for thread #2.
+Warm-up phase is over for thread #0.
+Main benchmark duration is started for thread #0.
+Warm-up phase is over for thread #5.
+Main benchmark duration is started for thread #5.
+Warm-up phase is over for thread #1.
+Main benchmark duration is started for thread #1.
+Warm-up phase is over for thread #7.
+Main benchmark duration is started for thread #7.
+Warm-up phase is over for thread #4.
+Main benchmark duration is started for thread #4.
+Warm-up phase is over for thread #6.
+Main benchmark duration is started for thread #6.
+Warm-up phase is over for thread #8.
+Main benchmark duration is started for thread #8.
+Warm-up phase is over for thread #3.
+Main benchmark duration is started for thread #3.
+Main benchmark duration is over for thread #4. Stopping all clients.
+Stopped all clients for thread #4
+Main benchmark duration is over for thread #7. Stopping all clients.
+Stopped all clients for thread #7
+Main benchmark duration is over for thread #8. Stopping all clients.
+Main benchmark duration is over for thread #Stopped all clients for thread #8
+1. Stopping all clients.
+Stopped all clients for thread #1
+Main benchmark duration is over for thread #6. Stopping all clients.
+Main benchmark duration is over for thread #2. Stopping all clients.
+Stopped all clients for thread #6
+Stopped all clients for thread #2
+Main benchmark duration is over for thread #0. Stopping all clients.
+Main benchmark duration is over for thread #3. Stopping all clients.
+Stopped all clients for thread #0
+Stopped all clients for thread #3
+Main benchmark duration is over for thread #5. Stopping all clients.
+Stopped all clients for thread #5
+
+finished in 10.01s, 20000.00 req/s, 39.56MB/s
+requests: 100000 total, 100000 started, 100000 done, 100000 succeeded, 0 failed, 0 errored, 0 timeout
+status codes: 100000 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 197.79MB (207400000) total, 1.54MB (1616000) headers (space savings 83.84%), 390.63MB (409600000) data
+                     min         max         mean         sd        +/- sd
+time for request:      104us     27.98ms      7.18ms      5.31ms    63.72%
+time for connect:        0us         0us         0us         0us     0.00%
+time to 1st byte:        0us         0us         0us         0us     0.00%
+req/s           :       9.98        9.99        9.99        0.00    68.40%

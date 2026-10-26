@@ -8,12 +8,15 @@
 #   agent.sh sample <pid>         "user_s sys_s now_s" for the process
 #   agent.sh alive <pid>
 #   agent.sh stop <pid>           SIGINT, then SIGKILL after 5 s
+#   agent.sh mem <pid> <port>     "rss_kib peak_kib tcp_kib established": the
+#                                 process's memory, the kernel's for all TCP
+#                                 sockets, the connections open on the port
 #   agent.sh nic                  the NIC's allowance counters, name=value
 #   agent.sh info                 the machine, for env.txt
 
 set -euo pipefail
 
-cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|nic|info}
+cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|info}
 shift
 
 case $cmd in
@@ -51,6 +54,14 @@ case $cmd in
         done
         kill -KILL "$1" 2> /dev/null || true
         ;;
+    mem)
+        # The kernel counts TCP buffers in pages, for every socket on the
+        # machine: on one running client and server both, it is both ends.
+        page=$(getconf PAGESIZE)
+        awk '/^VmRSS/ { rss = $2 } /^VmHWM/ { hwm = $2 } END { printf "%d %d ", rss, hwm }' "/proc/$1/status"
+        awk -v page="$page" '/^TCP:/ { for (i = 2; i < NF; i++) if ($i == "mem") printf "%d ", $(i + 1) * page / 1024 }' /proc/net/sockstat
+        ss -tnH state established "sport = :$2" | wc -l
+        ;;
     nic)
         # An ENA's counts of packets queued or dropped for going past what
         # the instance is allowed: bandwidth in and out, packets per second,
@@ -73,6 +84,12 @@ case $cmd in
         echo "  kernel: $(uname -r)"
         echo "  cpus: $(nproc --all), $(lscpu | awk -F: '/^Model name/ { gsub(/^ +/, "", $2); print $2 }')"
         echo "  io_uring_disabled: $(cat /proc/sys/kernel/io_uring_disabled 2> /dev/null || echo n/a)"
+        echo "  page size: $(getconf PAGESIZE)"
+        echo "  open files: $(ulimit -Hn) hard"
+        for key in net.ipv4.ip_local_port_range net.core.somaxconn net.ipv4.tcp_max_syn_backlog \
+            net.ipv4.tcp_tw_reuse net.ipv4.tcp_syncookies; do
+            echo "  $key: $(sysctl -n $key | tr '\t' ' ')"
+        done
         ;;
     *)
         echo "unknown command $cmd" >&2

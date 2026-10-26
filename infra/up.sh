@@ -83,10 +83,21 @@ fi
 
 ami=$(aws_ ssm get-parameter --name "$AMI_PARAM" --query Parameter.Value --output text)
 
-# Nothing may upgrade packages in the middle of a run.
+# Nothing may upgrade packages in the middle of a run. The sysctls let one
+# h2load open tens of thousands of connections to one address and port, and
+# open them again run after run: every source port, TIME_WAIT ones reused,
+# and room in the kernel's queues for a burst of handshakes. Both servers
+# still listen with the same backlog of 1024.
 cat > "$STATE/user-data.sh" << 'EOF'
 #!/bin/bash
 set -eux
+cat > /etc/sysctl.d/90-slopio-bench.conf << 'SYSCTL'
+net.ipv4.ip_local_port_range = 1024 65535
+net.ipv4.tcp_tw_reuse = 1
+net.core.somaxconn = 65535
+net.ipv4.tcp_max_syn_backlog = 65535
+SYSCTL
+sysctl --system
 systemctl disable --now unattended-upgrades.service apt-daily.timer apt-daily-upgrade.timer || true
 apt-get -o DPkg::Lock::Timeout=600 update
 DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 install -y \

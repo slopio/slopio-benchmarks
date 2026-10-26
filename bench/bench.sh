@@ -3,6 +3,13 @@
 #
 #   bench/bench.sh single [local|aws]   # each server on one thread, on CPU 0
 #   bench/bench.sh multi [local|aws]    # one worker per CPU, on CPUs 0..N-1
+#   bench/bench.sh conns [local|aws]    # one thread, many connections at a
+#                                       # fixed rate each
+#
+# single and multi give each server all the load it can take: each is
+# measured at its own peak. conns gives both the same load, N connections
+# each sending a fixed number of requests per second, and compares what it
+# costs them: CPU, memory, latency.
 #
 # local: server and h2load on this machine, the server on the first CPUs and
 # h2load on the rest. aws: the server on the instance infra/up.sh made for
@@ -24,10 +31,14 @@
 #                requests arrive together, and the more a server can batch.
 #   CONFIGS      connections x streams per connection, default
 #                "1x1 16x16 64x32" (single), "16x16 64x32 256x16" (multi).
+#                For conns, connections@requests per second per connection,
+#                default "1000@1 5000@1 20000@1 1000@100 20000@5" (local),
+#                "1000@1 10000@1 50000@1 1000@200 10000@20 50000@4" (aws).
 #   SERVERS      which to run, default all of the mode's: slopio hyper
-#                (single); slopio hyper-reuseport hyper-multi (multi).
-#   DURATION     seconds measured per run, default 8.
-#   WARMUP       seconds of load before each measured run, default 2.
+#                (single, conns); slopio hyper-reuseport hyper-multi (multi).
+#   DURATION     seconds measured per run, default 8 (10 for conns).
+#   WARMUP       seconds of load before each measured run, default 2 (10 for
+#                conns, for all the connections to be made).
 #   REPS         repetitions, default 3.
 #   PORT         default 18080.
 #   SKIP_BUILD   set to use the binaries already in target/release.
@@ -39,9 +50,9 @@ where=${2:-local}
 root=$(cd "$(dirname "$0")/.." && pwd)
 
 case $mode in
-    single | multi) ;;
+    single | multi | conns) ;;
     *)
-        echo "usage: $0 single|multi [local|aws]" >&2
+        echo "usage: $0 single|multi|conns [local|aws]" >&2
         exit 2
         ;;
 esac
@@ -68,7 +79,7 @@ case $where in
         target_ip=$SERVER_PRIVATE_IP
         ;;
     *)
-        echo "usage: $0 single|multi [local|aws]" >&2
+        echo "usage: $0 single|multi|conns [local|aws]" >&2
         exit 2
         ;;
 esac
@@ -99,6 +110,15 @@ case $mode in
         configs=${CONFIGS:-"16x16 64x32 256x16"}
         servers=${SERVERS:-"slopio hyper-reuseport hyper-multi"}
         ;;
+    conns)
+        default_server_cpus=0
+        if [[ $where == local ]]; then
+            configs=${CONFIGS:-"1000@1 5000@1 20000@1 1000@100 20000@5"}
+        else
+            configs=${CONFIGS:-"1000@1 10000@1 50000@1 1000@200 10000@20 50000@4"}
+        fi
+        servers=${SERVERS:-"slopio hyper"}
+        ;;
 esac
 server_cpus=${SERVER_CPUS:-$default_server_cpus}
 if [[ ! $server_cpus =~ ^0(-([0-9]+))?$ ]]; then
@@ -127,10 +147,15 @@ count_cpus() {
 client_count=$(count_cpus "$client_cpus")
 case $mode in
     single) client_threads=${CLIENT_THREADS:-$((client_count < 4 ? client_count : 4))} ;;
-    multi) client_threads=${CLIENT_THREADS:-$client_count} ;;
+    multi | conns) client_threads=${CLIENT_THREADS:-$client_count} ;;
 esac
-duration=${DURATION:-8}
-warmup=${WARMUP:-2}
+if [[ $mode == conns ]]; then
+    duration=${DURATION:-10}
+    warmup=${WARMUP:-10}
+else
+    duration=${DURATION:-8}
+    warmup=${WARMUP:-2}
+fi
 reps=${REPS:-3}
 port=${PORT:-18080}
 
@@ -210,7 +235,11 @@ for p in lock["package"]:
 EOF
 } > "$out/env.txt"
 
-echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
+if [[ $mode == conns ]]; then
+    echo "server,conns,rate,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,connect_mean_us,connect_max_us,established,server_cores,server_user_pct,server_sys_pct,idle_mib,rss_mib,peak_mib,tcp_idle_mib,tcp_mib,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
+else
+    echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
+fi
 
 run_one() {
     local name=$1 conns=$2 streams=$3 rep=$4
@@ -285,13 +314,69 @@ EOF
     tail -1 "$out/raw.csv"
 }
 
+# N connections at a fixed rate each, the same for both servers: what it
+# costs each to hold them and answer them.
+run_conns() {
+    local name=$1 conns=$2 rate=$3 rep=$4
+    local tag="$name-${conns}c-${rate}rps-$rep"
+    local threads=$((conns < client_threads ? conns : client_threads))
+    local url="http://$target_ip:$port/"
+
+    local pid
+    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name")")
+    if ! on_server "$agent listening $port"; then
+        on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
+        echo "$tag: the server never listened, see $out/raw/$tag.server.log" >&2
+        exit 1
+    fi
+    local idle
+    idle=$(on_server "$agent mem $pid $port")
+
+    # h2load makes its connections all at once, then sends. The warm-up is
+    # left out of its figures and out of the server's CPU time below. Up to
+    # 8 streams per connection, so that one slow answer does not hold the
+    # rate back.
+    on_client "ulimit -n \$(ulimit -Hn); taskset -c $client_cpus h2load -t $threads -c $conns -m 8 --rps $rate --warm-up-time ${warmup}s -D $duration $url" \
+        > "$out/raw/$tag.h2load.txt" 2>&1 &
+    local load=$!
+    sleep "$warmup"
+
+    local before after during peak nic_before nic_after
+    nic_before=$(on_server "$agent nic")
+    before=$(on_server "$agent sample $pid")
+    on_client "mpstat -P $client_cpus $((duration > 2 ? duration - 1 : 1)) 1" > "$out/raw/$tag.mpstat.txt" &
+    local mp=$!
+    sleep $((duration / 2))
+    during=$(on_server "$agent mem $pid $port")
+    wait $load || true
+    after=$(on_server "$agent sample $pid")
+    nic_after=$(on_server "$agent nic")
+    peak=$(on_server "$agent mem $pid $port")
+    wait $mp || true
+
+    if ! on_server "$agent alive $pid"; then
+        on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
+        echo "$tag: the server died, see $out/raw/$tag.server.log" >&2
+        exit 1
+    fi
+    on_server "$agent stop $pid"
+    on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
+
+    python3 -I "$root/bench/parse_conns.py" "$out/raw/$tag.h2load.txt" "$out/raw/$tag.mpstat.txt" \
+        "$before" "$after" "$nic_before" "$nic_after" "$idle" "$during" "$peak" \
+        "$name" "$conns" "$rate" "$rep" >> "$out/raw.csv"
+    tail -1 "$out/raw.csv"
+}
+
 echo "$mode, $where: server on CPUs $server_cpus, h2load on $client_cpus with $client_threads threads; results in $out"
 for config in $configs; do
-    conns=${config%x*}
-    streams=${config#*x}
     for rep in $(seq "$reps"); do
         for name in $servers; do
-            run_one "$name" "$conns" "$streams" "$rep"
+            if [[ $mode == conns ]]; then
+                run_conns "$name" "${config%@*}" "${config#*@}" "$rep"
+            else
+                run_one "$name" "${config%x*}" "${config#*x}" "$rep"
+            fi
         done
     done
 done

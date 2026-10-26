@@ -107,7 +107,15 @@ Both servers read these:
 ```sh
 bench/bench.sh single   # each server on one thread, on CPU 0
 bench/bench.sh multi    # one worker per CPU, on CPUs 0..N-1 (half the machine)
+bench/bench.sh conns    # one thread, many connections at a fixed rate each
 ```
+
+`single` and `multi` give each server all the load it can take, so each is
+measured at its own peak. `conns` gives both the same load: N connections
+each sending a fixed number of requests per second (`CONFIGS="1000@1
+20000@5"`), and compares what it costs them: CPU, the server's memory and the
+kernel's TCP buffers, latency. h2load sends every connection's request at the
+same instant, so its latency there is the time to answer a burst of N.
 
 Each builds the servers, then runs h2load against them in turn on the CPUs
 the servers do not use: for every configuration of connections × streams, a
