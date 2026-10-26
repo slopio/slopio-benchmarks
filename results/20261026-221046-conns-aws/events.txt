@@ -1,0 +1,4 @@
+slopio-50000c-4rps-2: h2load printed no figures (killed after hanging); run left out
+hyper-50000c-4rps-2: the server died
+[Mon Oct 26 22:22:35 2026] Out of memory: Killed process 7809 (hyper-server) total-vm:3154492kB, anon-rss:1389796kB, file-rss:1572kB, shmem-rss:0kB, UID:1000 pgtables:4240kB oom_score_adj:0
+The benchmark stopped there: the script did not yet carry on past a dead server.

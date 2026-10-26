@@ -1,0 +1,36 @@
+starting benchmark...
+spawning thread #0: 12500 total client(s). Timing-based test with 20s of warm-up time and 10s of main duration for measurements.
+spawning thread #1: 12500 total client(s). Timing-based test with 20s of warm-up time and 10s of main duration for measurements.
+spawning thread #2: 12500 total client(s). Timing-based test with 20s of warm-up time and 10s of main duration for measurements.
+spawning thread #3: 12500 total client(s). Timing-based test with 20s of warm-up time and 10s of main duration for measurements.
+Warm-up started for thread #2.
+Warm-up started for thread #0.
+Warm-up started for thread #1.
+Warm-up started for thread #3.
+progress: 10% of clients started
+progress: 20% of clients started
+progress: 30% of clients started
+progress: 40% of clients started
+progress: 50% of clients started
+progress: 60% of clients started
+progress: 70% of clients started
+progress: 80% of clients started
+progress: 90% of clients started
+progress: 100% of clients started
+Application protocol: h2c
+Warm-up phase is over for thread #1.
+Main benchmark duration is started for thread #1.
+Warm-up phase is over for thread #3.
+Main benchmark duration is started for thread #3.
+Warm-up phase is over for thread #0.
+Main benchmark duration is started for thread #0.
+Warm-up phase is over for thread #2.
+Main benchmark duration is started for thread #2.
+Main benchmark duration is over for thread #1. Stopping all clients.
+Main benchmark duration is over for thread #0. Stopping all clients.
+Stopped all clients for thread #1
+Stopped all clients for thread #0
+Main benchmark duration is over for thread #2. Stopping all clients.
+Stopped all clients for thread #2
+Main benchmark duration is over for thread #3. Stopping all clients.
+Stopped all clients for thread #3

@@ -1,0 +1,21 @@
+  conns req/s each     asked  server       req/s    open   lat mean   lat max  cores       RSS per conn kernel TCP  client  failed  runs  net capped
+----------------------------------------------------------------------------------------------------------------------------------------------------
+  50000          1    50,000  slopio      50,010  50,000   173.38ms 18370.00ms   0.53    522.4M    10.0K      30.0M     20%       0     3            
+  50000          1    50,000  hyper       50,000  50,000   292.73ms  634.64ms   0.71   1116.9M    22.8K      68.8M     19%       0     3            
+
+   1000        200   200,000  slopio     200,029   1,000     3.85ms   20.98ms   0.72     51.5M    17.1K       4.0M     32%       0     3            
+   1000        200   200,000  hyper      156,154   1,000    51.37ms   63.07ms   0.98     37.2M    35.4K       4.0M     27%       0     3            
+
+  10000         20   200,000  slopio     199,568   9,977   221.46ms 1110.00ms   0.88    405.4M    38.0K      38.1M     51%       0     3            
+  10000         20   200,000  hyper      140,833   9,728   556.76ms  856.96ms   1.00    320.2M    33.4K      36.0M     26%       0     3            
+
+  50000          4   200,000  slopio     166,891  42,061   620.33ms 2530.00ms   0.93    751.8M    17.5K     159.6M     49%       0     1            
+  50000          4   200,000  hyper      113,340  43,037  3030.00ms 6710.00ms   0.99   1331.9M    31.6K     168.0M     21%       0     1            
+
+Medians of each case's runs; runs: how many there were, fewer when some were left out (see below). asked: connections times the rate each, what h2load aimed for; max: each connection sends its next request as soon as it has the answer. open: connections established, read half way through. cores: the server's CPU time per second. RSS: the server's resident memory under the load; per conn: what it grew by from idle, over the connections open. kernel TCP: what the machine's TCP buffers grew by, both ends if the client runs there too. client: the load generator's CPUs. Latency: h2load sends every connection's request at the same instant, so it is the time to answer a burst of as many requests as there are connections.
+
+Runs left out:
+slopio-50000c-4rps-2: h2load printed no figures (killed after hanging); run left out
+hyper-50000c-4rps-2: the server died
+[Mon Oct 26 22:22:35 2026] Out of memory: Killed process 7809 (hyper-server) total-vm:3154492kB, anon-rss:1389796kB, file-rss:1572kB, shmem-rss:0kB, UID:1000 pgtables:4240kB oom_score_adj:0
+The benchmark stopped there: the script did not yet carry on past a dead server.

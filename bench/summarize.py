@@ -67,7 +67,8 @@ def summarize_conns(path):
     """A conns run: the same load for every server, so what each spent on it."""
     runs = defaultdict(list)
     for row in csv.DictReader(open(path)):
-        runs[(int(row["conns"]), int(row["rate"]), row["server"])].append(row)
+        # "max": as fast as each connection gets its answers.
+        runs[(int(row["conns"]), row["rate"], row["server"])].append(row)
 
     def median(rows, field):
         return statistics.median(float(r[field]) for r in rows)
@@ -76,12 +77,20 @@ def summarize_conns(path):
         f"{'conns':>7} {'req/s each':>10} {'asked':>9}  {'server':<8}"
         f" {'req/s':>9} {'open':>7}  {'lat mean':>9} {'lat max':>9}"
         f"  {'cores':>5}  {'RSS':>8} {'per conn':>8}"
-        f" {'kernel TCP':>10}  {'client':>6}  {'failed':>6}  {'net capped':>10}"
+        f" {'kernel TCP':>10}  {'client':>6}  {'failed':>6}  {'runs':>4}  {'net capped':>10}"
     )
     print(header)
     print("-" * len(header))
     previous = None
-    for (n, rate, server), rows in sorted(runs.items(), key=lambda kv: (kv[0][1] * kv[0][0], kv[0][0])):
+    def asked(n, rate):
+        return n * int(rate) if rate.isdigit() else None
+
+    def order(key):
+        n, rate, _ = key
+        # Fixed rates by the load they ask for, then the unbounded ones.
+        return (asked(n, rate) is None, asked(n, rate) or 0, n)
+
+    for (n, rate, server), rows in sorted(runs.items(), key=lambda kv: order(kv[0])):
         if previous is not None and previous != (n, rate):
             print()
         previous = (n, rate)
@@ -92,18 +101,20 @@ def summarize_conns(path):
         failed = sum(int(r["failed"]) + int(r["errored"]) for r in rows)
         capped = sum(int(r.get("nic_exceeded") or 0) > 0 for r in rows)
         print(
-            f"{n:>7} {rate:>10} {n * rate:>9,}  {server:<8}"
+            f"{n:>7} {rate:>10} {f'{asked(n, rate):,}' if asked(n, rate) else 'max':>9}  {server:<8}"
             f" {median(rows, 'rps'):>9,.0f} {open_:>7,.0f}"
             f"  {duration(median(rows, 'lat_mean_us')):>9} {duration(median(rows, 'lat_max_us')):>9}"
             f"  {median(rows, 'server_cores'):>5.2f}"
             f"  {f'{rss:.1f}M':>8} {f'{per_conn:.1f}K':>8} {f'{tcp:.1f}M':>10}"
-            f"  {f'{median(rows, 'client_busy_pct'):.0f}%':>6}  {failed:>6}"
+            f"  {f'{median(rows, 'client_busy_pct'):.0f}%':>6}  {failed:>6}  {len(rows):>4}"
             f"  {f'{capped}/{len(rows)}' if capped else '':>10}"
         )
     print()
     print(
-        f"Medians of {len(next(iter(runs.values())))} runs. asked: connections"
-        " times the rate each, what h2load aimed for. open: connections"
+        "Medians of each case's runs; runs: how many there were, fewer when"
+        " some were left out (see below). asked: connections"
+        " times the rate each, what h2load aimed for; max: each connection sends"
+        " its next request as soon as it has the answer. open: connections"
         " established, read half way through. cores: the server's CPU time per"
         " second. RSS: the server's resident memory under the load; per conn:"
         " what it grew by from idle, over the connections open. kernel TCP:"

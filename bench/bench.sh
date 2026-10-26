@@ -338,37 +338,47 @@ run_conns() {
     # grows with the connections: past the listen backlog, handshakes are
     # retried, and the last of 50,000 took 10 s. A connection made after the
     # measured time has ended is never stopped, and h2load waits on it for
-    # ever: the timeout ends that. Up to 8 streams per connection, so that
-    # one slow answer does not hold the rate back.
+    # ever: the timeout ends that. At a fixed rate, up to 8 streams per
+    # connection, so that one slow answer does not hold the rate back; at
+    # max, one request at a time per connection, each sent as soon as the
+    # last is answered, as as many separate clients would.
     local run_warmup=$((conns / 2500 > warmup ? conns / 2500 : warmup))
-    on_client "ulimit -n \$(ulimit -Hn); timeout -s KILL $((run_warmup + duration + 30)) taskset -c $client_cpus h2load -t $threads -c $conns -m 8 --rps $rate --warm-up-time ${run_warmup}s -D $duration $url" \
+    local pace="-m 8 --rps $rate"
+    [[ $rate == max ]] && pace="-m 1"
+    on_client "ulimit -n \$(ulimit -Hn); timeout -s KILL $((run_warmup + duration + 30)) taskset -c $client_cpus h2load -t $threads -c $conns $pace --warm-up-time ${run_warmup}s -D $duration $url" \
         > "$out/raw/$tag.h2load.txt" 2>&1 &
     local load=$!
     sleep "$run_warmup"
 
+    # Any of these fails once the server has died; that is told below.
     local before after during peak nic_before nic_after
-    nic_before=$(on_server "$agent nic")
-    before=$(on_server "$agent sample $pid")
+    nic_before=$(on_server "$agent nic") || true
+    before=$(on_server "$agent sample $pid") || true
     on_client "mpstat -P $client_cpus $((duration > 2 ? duration - 1 : 1)) 1" > "$out/raw/$tag.mpstat.txt" &
     local mp=$!
     sleep $((duration / 2))
-    during=$(on_server "$agent mem $pid $port")
+    during=$(on_server "$agent mem $pid $port") || true
     wait $load || true
-    after=$(on_server "$agent sample $pid")
-    nic_after=$(on_server "$agent nic")
-    peak=$(on_server "$agent mem $pid $port")
+    after=$(on_server "$agent sample $pid") || true
+    nic_after=$(on_server "$agent nic") || true
+    peak=$(on_server "$agent mem $pid $port") || true
     wait $mp || true
 
+    # A server that died under the load is a result, not a reason to stop:
+    # what the kernel said goes to events.txt, and the next run goes on.
     if ! on_server "$agent alive $pid"; then
-        on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
-        echo "$tag: the server died, see $out/raw/$tag.server.log" >&2
-        exit 1
+        {
+            echo "$tag: the server died"
+            on_server "cat $log_dir/$tag.log; sudo -n dmesg -T 2> /dev/null | grep -i -E 'out of memory|killed process' | tail -2"
+        } >> "$out/events.txt" 2>&1 || true
+        echo "$tag: the server died, see $out/events.txt" >&2
+        return
     fi
     on_server "$agent stop $pid"
     on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
 
     if ! grep -q "^finished in" "$out/raw/$tag.h2load.txt"; then
-        echo "$tag: h2load printed no figures (killed after hanging?); run left out" >&2
+        echo "$tag: h2load printed no figures (killed after hanging); run left out" | tee -a "$out/events.txt" >&2
         return
     fi
     python3 -I "$root/bench/parse_conns.py" "$out/raw/$tag.h2load.txt" "$out/raw/$tag.mpstat.txt" \
@@ -390,4 +400,11 @@ for config in $configs; do
     done
 done
 
-python3 -I "$root/bench/summarize.py" "$out/raw.csv" | tee "$out/summary.txt"
+{
+    python3 -I "$root/bench/summarize.py" "$out/raw.csv"
+    if [[ -f $out/events.txt ]]; then
+        echo
+        echo "Runs left out:"
+        cat "$out/events.txt"
+    fi
+} | tee "$out/summary.txt"
