@@ -4,6 +4,7 @@
 # against it and the system's OpenSSL and zlib.
 #
 #   servers/h2o/build.sh
+#   CFLAGS=-mcpu=native servers/h2o/build.sh    # libh2o and the server alike
 #
 # Needs git, cmake, a C compiler, and OpenSSL's and zlib's headers
 # (libssl-dev, zlib1g-dev). Ubuntu 24.04's libssl3 and zlib1g, there by
@@ -26,7 +27,8 @@ if [[ $(git -C "$src" rev-parse HEAD) != "$H2O_REV" ]]; then
     git -C "$src" checkout -q "$H2O_REV"
 fi
 
-cmake -S "$src" -B "$src/build" -DCMAKE_BUILD_TYPE=Release -DWITH_MRUBY=OFF -DWITH_BUNDLED_SSL=OFF > /dev/null
+cmake -S "$src" -B "$src/build" -DCMAKE_BUILD_TYPE=Release -DWITH_MRUBY=OFF -DWITH_BUNDLED_SSL=OFF \
+    -DCMAKE_C_FLAGS="${CFLAGS:-}" > /dev/null
 make -C "$src/build" -s -j"$(nproc)" libh2o-evloop
 
 includes=()
@@ -34,6 +36,7 @@ for dir in include deps/picotls/include deps/quicly/include deps/klib deps/yoml 
     includes+=("-I$src/$dir")
 done
 mkdir -p "$out"
-cc -std=gnu11 -O2 -pthread -Wall -DH2O_USE_LIBUV=0 "${includes[@]}" "$root/servers/h2o/server.c" \
+# shellcheck disable=SC2086
+cc -std=gnu11 -O2 ${CFLAGS:-} -pthread -Wall -DH2O_USE_LIBUV=0 "${includes[@]}" "$root/servers/h2o/server.c" \
     "$src/build/libh2o-evloop.a" -lssl -lcrypto -lz -lm -o "$out/h2o-server"
 echo "$out/h2o-server (h2o $H2O_REV)"

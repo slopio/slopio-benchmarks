@@ -177,9 +177,10 @@ fi
 reps=${REPS:-3}
 port=${PORT:-18080}
 
-# name -> binary and environment.
+# name -> binary and environment. A name ending in -native is the same
+# server built on the instance for its own CPU, by infra/build-native.sh.
 server_bin() {
-    case $1 in
+    case ${1%-native} in
         slopio) echo slopio-server ;;
         hyper | hyper-reuseport | hyper-multi) echo hyper-server ;;
         h2o) echo h2o-server ;;
@@ -187,7 +188,7 @@ server_bin() {
     esac
 }
 server_env() {
-    case $1 in
+    case ${1%-native} in
         slopio | hyper | h2o) echo "$per_core" ;;
         hyper-reuseport) echo "$per_core TOKIO_MODE=reuseport" ;;
         hyper-multi) echo "$per_core TOKIO_MODE=multi" ;;
@@ -215,12 +216,23 @@ if [[ -z ${SKIP_BUILD:-} ]]; then
         "$root/servers/h2o/build.sh" > /dev/null
     fi
 fi
+# A server's binary here, and its name on the server's machine.
+local_binary() {
+    if [[ $1 == *-native ]]; then
+        echo "$root/target/native/$(server_bin "$1")"
+    else
+        binary "$(server_bin "$1")"
+    fi
+}
+remote_name() {
+    echo "$(server_bin "$1")${1#"${1%-native}"}"
+}
 # Where the server's machine has a server's binary.
 server_path() {
     if [[ $where == local ]]; then
-        binary "$(server_bin "$1")"
+        local_binary "$1"
     else
-        echo "$bin_dir/$(server_bin "$1")"
+        echo "$bin_dir/$(remote_name "$1")"
     fi
 }
 # h2o-server is built by servers/h2o/build.sh, beside the Rust ones' target.
@@ -243,8 +255,9 @@ else
         ssh_to "$host" "mkdir -p $bin_dir $log_dir"
         scp -q "${SSH_OPTS[@]}" "$root/bench/agent.sh" "ubuntu@$host:$remote_dir/"
     done
-    for name in $servers; do binary "$(server_bin "$name")"; done | sort -u |
-        xargs -I{} scp -q "${SSH_OPTS[@]}" {} "ubuntu@$SERVER_IP:$bin_dir/"
+    for name in $servers; do
+        scp -q "${SSH_OPTS[@]}" "$(local_binary "$name")" "ubuntu@$SERVER_IP:$bin_dir/$(remote_name "$name")"
+    done
 fi
 
 if [[ -n ${PROFILE:-} ]] && ! on_server "$agent perf-setup" > /dev/null; then
