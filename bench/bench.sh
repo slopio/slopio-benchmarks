@@ -255,7 +255,7 @@ EOF
 } > "$out/env.txt"
 
 if [[ $mode == conns ]]; then
-    echo "server,conns,rate,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,connect_mean_us,connect_max_us,established,server_cores,server_user_pct,server_sys_pct,idle_mib,rss_mib,peak_mib,tcp_idle_mib,tcp_mib,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
+    echo "server,conns,rate,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,connect_mean_us,connect_max_us,established,server_cores,server_user_pct,server_sys_pct,idle_mib,rss_mib,peak_mib,tcp_idle_mib,tcp_mib,client_busy_pct,nic_exceeded,nic_detail,machine_cores,machine_irq_cores" > "$out/raw.csv"
 else
     echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
 fi
@@ -374,6 +374,10 @@ run_conns() {
     before=$(on_server "$agent sample $pid") || true
     on_client "mpstat -P $client_cpus $((duration > 2 ? duration - 1 : 1)) 1" > "$out/raw/$tag.mpstat.txt" &
     local mp=$!
+    # The whole server machine, interrupts and the kernel's network work
+    # included, which the server process's own CPU time leaves out.
+    on_server "mpstat -P ALL $((duration > 2 ? duration - 1 : 1)) 1" > "$out/raw/$tag.server-mpstat.txt" &
+    local smp=$!
     # perf's own cost lowers what it measures: a profiled run's figures are
     # not to be set beside an unprofiled one's.
     local prof=
@@ -389,6 +393,7 @@ run_conns() {
     nic_after=$(on_server "$agent nic") || true
     peak=$(on_server "$agent mem $pid $port") || true
     wait $mp || true
+    wait $smp || true
 
     # A server that died under the load is a result, not a reason to stop:
     # what the kernel said goes to events.txt, and the next run goes on.
@@ -417,7 +422,7 @@ run_conns() {
     fi
     python3 -I "$root/bench/parse_conns.py" "$out/raw/$tag.h2load.txt" "$out/raw/$tag.mpstat.txt" \
         "$before" "$after" "$nic_before" "$nic_after" "$idle" "$during" "$peak" \
-        "$name" "$conns" "$rate" "$rep" >> "$out/raw.csv"
+        "$name" "$conns" "$rate" "$rep" "$out/raw/$tag.server-mpstat.txt" >> "$out/raw.csv"
     tail -1 "$out/raw.csv"
 }
 

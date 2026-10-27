@@ -1,7 +1,8 @@
 //! The same route as `servers/slopio`, on tokio and hyper, set up the way
 //! slopio's runtime sets itself up so that only the stacks differ: mimalloc,
 //! one `SO_REUSEPORT` listener per worker with a backlog of 1024, `TCP_NODELAY`
-//! on every connection, workers pinned to cores 0..N, one task per stream.
+//! on every connection, worker n pinned to the nth CPU the process may run
+//! on, one task per stream.
 //!
 //!     PER_CORE=1 cargo run --release -p hyper-server
 //!     h2load -n 100000 -c 64 -m 32 http://127.0.0.1:8080/
@@ -13,14 +14,21 @@
 //! | `TOKIO_MODE`    | `reuseport`| With `PER_CORE`: `reuseport`, or `multi` for tokio's work-stealing runtime. |
 //! | `MAX_STREAMS`   | `64`       | SETTINGS_MAX_CONCURRENT_STREAMS, as slopio-h2's.     |
 //! | `STREAM_WINDOW` | `1048576`  | SETTINGS_INITIAL_WINDOW_SIZE, as slopio-h2's.        |
+//! | `INCOMING_CPU`  | unset      | In `reuseport` mode, `SO_INCOMING_CPU` on each worker's listener: a connection goes to the worker on the CPU its packets arrive on. |
+//!
+//! In `reuseport` mode each worker logs, every 5 s, how many connections it
+//! accepted and how many of them arrived on its own CPU, as the kernel's
+//! `SO_INCOMING_CPU` on the accepted socket tells.
 
 use std::net::SocketAddr;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use hyper::server::conn::http2;
 use hyper::service::service_fn;
 use hyper_util::rt::{TokioExecutor, TokioIo};
-use socket2::{Domain, Protocol, Socket, Type};
+use socket2::{Domain, Protocol, SockRef, Socket, Type};
 use tokio::net::TcpListener;
 
 mod routes;
@@ -45,6 +53,7 @@ struct Config {
     port: u16,
     max_streams: u32,
     stream_window: u32,
+    incoming_cpu: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -63,6 +72,7 @@ fn main() {
         port: env("PORT", 8080),
         max_streams: env("MAX_STREAMS", MAX_STREAMS),
         stream_window: env("STREAM_WINDOW", STREAM_WINDOW),
+        incoming_cpu: flag("INCOMING_CPU"),
     };
     let mode = match (flag("PER_CORE"), std::env::var("TOKIO_MODE").as_deref()) {
         (false, _) => Mode::Single,
@@ -71,10 +81,11 @@ fn main() {
         (true, Ok(other)) => panic!("unknown TOKIO_MODE `{other}`: reuseport, multi"),
     };
     // As slopio's runtime counts them: the CPUs this process may run on.
-    let threads: usize = std::thread::available_parallelism().unwrap().into();
+    let cpus = allowed_cpus();
+    let threads = cpus.len();
 
     println!(
-        "hyper-server on :{} (h2c), mode={mode:?}, threads={}, max_streams={}, stream_window={}",
+        "hyper-server on :{} (h2c), mode={mode:?}, threads={}, max_streams={}, stream_window={}, incoming_cpu={}",
         config.port,
         match mode {
             Mode::Single => 1,
@@ -82,16 +93,18 @@ fn main() {
         },
         config.max_streams,
         config.stream_window,
+        config.incoming_cpu,
     );
 
     match mode {
-        Mode::Single => current_thread().block_on(serve(config)),
+        Mode::Single => current_thread().block_on(serve(config, None)),
         Mode::Reuseport => {
-            let workers: Vec<_> = (0..threads)
-                .map(|core| {
+            let workers: Vec<_> = cpus
+                .into_iter()
+                .map(|cpu| {
                     std::thread::spawn(move || {
-                        pin_core(core);
-                        current_thread().block_on(serve(config));
+                        pin_core(cpu);
+                        current_thread().block_on(serve(config, Some(cpu)));
                     })
                 })
                 .collect();
@@ -104,7 +117,7 @@ fn main() {
             .enable_all()
             .build()
             .expect("a tokio runtime")
-            .block_on(serve(config)),
+            .block_on(serve(config, None)),
     }
 }
 
@@ -115,8 +128,11 @@ fn current_thread() -> tokio::runtime::Runtime {
         .expect("a tokio runtime")
 }
 
-async fn serve(config: Config) {
-    let listener = listen(config.port).expect("the listener binds");
+/// `cpu`: the one this worker is pinned to, in `reuseport` mode.
+async fn serve(config: Config, cpu: Option<usize>) {
+    let steer = cpu.filter(|_| config.incoming_cpu);
+    let listener = listen(config.port, steer).expect("the listener binds");
+    let placed = cpu.map(|cpu| Placement::report(cpu));
     let mut http = http2::Builder::new(TokioExecutor::new());
     http.max_concurrent_streams(config.max_streams)
         .initial_stream_window_size(config.stream_window)
@@ -135,6 +151,9 @@ async fn serve(config: Config) {
             }
         };
         let _ = socket.set_nodelay(true);
+        if let Some(placed) = &placed {
+            placed.count(&socket);
+        }
         let connection = http.serve_connection(TokioIo::new(socket), service_fn(routes::route));
         tokio::spawn(async move {
             let _ = connection.await;
@@ -142,18 +161,78 @@ async fn serve(config: Config) {
     }
 }
 
-/// As slopio's `MultiAccept::bind`.
-fn listen(port: u16) -> std::io::Result<TcpListener> {
+/// How many of a worker's connections arrive on its own CPU: counted at
+/// accept, logged every 5 s while it changes.
+struct Placement {
+    cpu: usize,
+    accepted: Arc<AtomicU64>,
+    here: Arc<AtomicU64>,
+}
+
+impl Placement {
+    fn report(cpu: usize) -> Self {
+        let placement = Self {
+            cpu,
+            accepted: Arc::default(),
+            here: Arc::default(),
+        };
+        let (accepted, here) = (placement.accepted.clone(), placement.here.clone());
+        tokio::spawn(async move {
+            let mut last = 0;
+            loop {
+                tokio::time::sleep(Duration::from_secs(5)).await;
+                let n = accepted.load(Ordering::Relaxed);
+                if n != last {
+                    last = n;
+                    let h = here.load(Ordering::Relaxed);
+                    eprintln!("worker on CPU {cpu}: {n} accepted, {h} arrived on this CPU");
+                }
+            }
+        });
+        placement
+    }
+
+    /// The kernel records on each socket the CPU that last handled its
+    /// packets: at accept, the one that took the handshake's last ACK.
+    fn count(&self, socket: &tokio::net::TcpStream) {
+        self.accepted.fetch_add(1, Ordering::Relaxed);
+        if SockRef::from(socket).cpu_affinity().ok() == Some(self.cpu) {
+            self.here.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+}
+
+/// As slopio's `MultiAccept::bind`. With `incoming_cpu`, `SO_INCOMING_CPU`:
+/// in a `SO_REUSEPORT` group the kernel then hands a connection to the
+/// listener whose CPU is the one that received it.
+fn listen(port: u16, incoming_cpu: Option<usize>) -> std::io::Result<TcpListener> {
     let socket = Socket::new(Domain::IPV4, Type::STREAM, Some(Protocol::TCP))?;
     socket.set_reuse_port(true)?;
+    if let Some(cpu) = incoming_cpu {
+        socket.set_cpu_affinity(cpu)?;
+    }
     socket.set_nonblocking(true)?;
     socket.bind(&SocketAddr::from(([0, 0, 0, 0], port)).into())?;
     socket.listen(BACKLOG)?;
     TcpListener::from_std(socket.into())
 }
 
-/// As slopio's runtime does it: worker `n` on CPU `n`, whatever mask the
-/// process was started with.
+/// The CPUs this process may run on, in ascending order, as slopio's runtime
+/// reads them (`runtime/src/topology/cpus.rs`): not `0..n`, a mask such as
+/// `0-2,4` leaves holes.
+fn allowed_cpus() -> Vec<usize> {
+    // SAFETY: a zeroed `cpu_set_t` is an empty set for the kernel to fill.
+    unsafe {
+        let mut set: libc::cpu_set_t = std::mem::zeroed();
+        let result = libc::sched_getaffinity(0, size_of::<libc::cpu_set_t>(), &mut set);
+        assert_eq!(result, 0, "sched_getaffinity failed");
+        (0..libc::CPU_SETSIZE as usize)
+            .filter(|&cpu| libc::CPU_ISSET(cpu, &set))
+            .collect()
+    }
+}
+
+/// As slopio's runtime does it: each worker on one CPU of the mask.
 fn pin_core(core: usize) {
     // SAFETY: a zeroed `cpu_set_t` is an empty set, and the call only reads it.
     unsafe {

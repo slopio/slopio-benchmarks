@@ -2,7 +2,7 @@
 
     parse_conns.py <h2load.txt> <mpstat.txt> <before> <after> <nic before>
         <nic after> <idle mem> <during mem> <peak mem> <server> <conns>
-        <rate> <rep>
+        <rate> <rep> [<server mpstat.txt>]
 
 before, after: agent.sh sample, "user_s sys_s now_s".
 mem: agent.sh mem, "rss_kib peak_kib tcp_kib established".
@@ -23,7 +23,8 @@ def counters(text):
 
 def main(args):
     (h2load, mpstat, before, after, nic_before, nic_after, idle, during, peak,
-     name, conns, rate, rep) = args
+     name, conns, rate, rep) = args[:13]
+    server_mpstat = args[13] if len(args) > 13 else None
     text = open(h2load).read()
 
     def timing(label):
@@ -55,6 +56,25 @@ def main(args):
     grew = {k: na[k] - nb.get(k, 0) for k in na if na[k] > nb.get(k, 0)}
     detail = " ".join(f"{k.removesuffix('_allowance_exceeded')}={v}" for k, v in grew.items())
 
+    # The whole server machine: every CPU's time that was not idle, iowait
+    # counted as idle (it is what an io_uring wait shows as), and how much of
+    # it went to interrupts and softirqs, the kernel's network work.
+    machine = irq = ""
+    if server_mpstat:
+        cols = None
+        cpus_busy = cpus_irq = 0.0
+        for line in open(server_mpstat):
+            fields = line.split()
+            # The averages' own header, whatever the clock's format above it.
+            if line.startswith("Average") and fields[1] == "CPU":
+                cols = {column: i for i, column in enumerate(fields)}
+            elif cols and line.startswith("Average") and fields[1].isdigit():
+                pct = lambda column: float(fields[cols[column]])
+                cpus_busy += 100 - pct("%idle") - pct("%iowait")
+                cpus_irq += pct("%irq") + pct("%soft")
+        if cols:
+            machine, irq = f"{cpus_busy / 100:.2f}", f"{cpus_irq / 100:.2f}"
+
     def mib(kib):
         return f"{kib / 1024:.1f}"
 
@@ -64,7 +84,7 @@ def main(args):
         f"{connect_mean:.0f}", f"{connect_max:.0f}", str(established),
         f"{user + system:.2f}", f"{100 * user / busy:.0f}", f"{100 * system / busy:.0f}",
         mib(idle_rss), mib(rss), mib(peak_rss), mib(idle_tcp), mib(tcp),
-        f"{client:.0f}", str(sum(grew.values())), detail,
+        f"{client:.0f}", str(sum(grew.values())), detail, machine, irq,
     ]))
 
 

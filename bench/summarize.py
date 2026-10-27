@@ -73,10 +73,15 @@ def summarize_conns(path):
     def median(rows, field):
         return statistics.median(float(r[field]) for r in rows)
 
+    def optional(rows, field):
+        """A column older runs do not have."""
+        values = [float(r[field]) for r in rows if r.get(field)]
+        return f"{statistics.median(values):.2f}" if values else ""
+
     header = (
         f"{'conns':>7} {'req/s each':>10} {'asked':>9}  {'server':<15}"
         f" {'req/s':>9} {'open':>7}  {'lat mean':>9} {'lat max':>9}"
-        f"  {'cores':>5}  {'RSS':>8} {'per conn':>8}"
+        f"  {'cores':>5} {'machine':>7} {'irq':>5}  {'RSS':>8} {'per conn':>8}"
         f" {'kernel TCP':>10}  {'client':>6}  {'failed':>6}  {'runs':>4}  {'net capped':>10}"
     )
     print(header)
@@ -104,13 +109,17 @@ def summarize_conns(path):
             f"{n:>7} {rate:>10} {f'{asked(n, rate):,}' if asked(n, rate) else 'max':>9}  {server:<15}"
             f" {median(rows, 'rps'):>9,.0f} {open_:>7,.0f}"
             f"  {duration(median(rows, 'lat_mean_us')):>9} {duration(median(rows, 'lat_max_us')):>9}"
-            f"  {median(rows, 'server_cores'):>5.2f}"
+            f"  {median(rows, 'server_cores'):>5.2f} {optional(rows, 'machine_cores'):>7} {optional(rows, 'machine_irq_cores'):>5}"
             f"  {f'{rss:.1f}M':>8} {f'{per_conn:.1f}K':>8} {f'{tcp:.1f}M':>10}"
             f"  {f'{median(rows, 'client_busy_pct'):.0f}%':>6}  {failed:>6}  {len(rows):>4}"
             f"  {f'{capped}/{len(rows)}' if capped else '':>10}"
         )
     print()
     print(
+        "machine: the server machine's CPUs busy, every one, the kernel's"
+        " network work included, which cores (the server process alone) leaves"
+        " out; irq: how much of it went to interrupts and softirqs. Both count"
+        " the client too when it runs on the same machine. "
         "Medians of each case's runs; runs: how many there were, fewer when"
         " some were left out (see below). asked: connections"
         " times the rate each, what h2load aimed for; max: each connection sends"

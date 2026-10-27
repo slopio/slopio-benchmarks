@@ -12,8 +12,8 @@
 #                                 process's memory, the kernel's for all TCP
 #                                 sockets, the connections open on the port
 #   agent.sh nic                  the NIC's allowance counters, name=value
-#   agent.sh pin-irqs <cpus>      stops irqbalance and moves the NIC's queue
-#                                 interrupts onto those CPUs
+#   agent.sh pin-irqs <cpus>      stops irqbalance and puts NIC queue n's
+#                                 interrupt, and XPS, on the nth of those CPUs
 #   agent.sh perf-setup           installs perf and lets it see the kernel
 #   agent.sh info                 the machine, for env.txt
 
@@ -78,9 +78,21 @@ case $cmd in
         # The ENA names its queue interrupts after the interface.
         iface=$(ip route show default | awk '{ print $5; exit }')
         sudo -n systemctl stop irqbalance 2> /dev/null || true
-        for irq in $(awk -F: -v i="$iface" '$0 ~ i { gsub(/ /, "", $1); print $1 }' /proc/interrupts); do
-            echo "$1" | sudo -n tee "/proc/irq/$irq/smp_affinity_list" > /dev/null
+        # One queue per CPU, in turn: queue n on the nth CPU of the list.
+        cpus=()
+        for part in ${1//,/ }; do
+            if [[ $part == *-* ]]; then cpus+=($(seq "${part%-*}" "${part#*-}")); else cpus+=("$part"); fi
         done
+        # Queue n's interrupt on the nth CPU, and XPS sending from that CPU
+        # through queue n, so that a connection's packets both ways stay on
+        # one core. The ENA names its queues <iface>-Tx-Rx-<n>.
+        awk -v i="$iface" '$0 ~ i"-Tx-Rx-" { irq = $1; sub(/:/, "", irq); n = $NF; sub(/.*-/, "", n); print irq, n }' /proc/interrupts |
+            while read -r irq queue; do
+                cpu=${cpus[queue % ${#cpus[@]}]}
+                echo "$cpu" | sudo -n tee "/proc/irq/$irq/smp_affinity_list" > /dev/null
+                xps=/sys/class/net/$iface/queues/tx-$queue/xps_cpus
+                [[ -e $xps ]] && printf '%x' $((1 << cpu)) | sudo -n tee "$xps" > /dev/null
+            done
         ;;
     perf-setup)
         if ! perf --version > /dev/null 2>&1; then
@@ -107,7 +119,7 @@ case $cmd in
         iface=$(ip route show default | awk '{ print $5; exit }')
         irqs=$(awk -F: -v i="$iface" '$0 ~ i { gsub(/ /, "", $1); print $1 }' /proc/interrupts)
         echo "  nic $iface: $(echo $irqs | wc -w) queue interrupts on CPUs" \
-            "$(for irq in $irqs; do cat /proc/irq/$irq/smp_affinity_list; done | sort -u | paste -sd' ')," \
+            "$(for irq in $irqs; do cat /proc/irq/$irq/smp_affinity_list; done | paste -sd' ')," \
             "irqbalance $(systemctl is-active irqbalance 2> /dev/null || true)"
         echo "  open files: $(ulimit -Hn) hard"
         for key in net.ipv4.ip_local_port_range net.core.somaxconn net.ipv4.tcp_max_syn_backlog \
