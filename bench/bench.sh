@@ -47,8 +47,11 @@
 #   SERVER_ENV   more VAR=value for every server, e.g. RING=4x16384 for
 #                slopio's receive buffers; recorded in env.txt.
 #   PROFILE      set, for conns: perf records the server through each measured
-#                run, and raw/ gets where its time went, by object and by
-#                function. Costs the server some of its throughput.
+#                run, and raw/ gets where its time went, by object, by
+#                function, inclusive of callees, and the call chains to the
+#                costliest. The servers are built apart for it, in
+#                target/profiling, with frame pointers and line tables. Costs
+#                the server some of its throughput: not for comparing req/s.
 #   SKIP_BUILD   set to use the binaries already in target/release.
 
 set -euo pipefail
@@ -190,13 +193,26 @@ server_env() {
     esac
 }
 
+# A profiled run gets binaries of its own, the two servers built alike:
+# frame pointers, for perf to walk every sample's stack, and line tables,
+# for it to tell the functions LTO inlined from the ones they went into.
+built=$root/target/release
+if [[ -n ${PROFILE:-} ]]; then
+    built=$root/target/profiling/release
+fi
 if [[ -z ${SKIP_BUILD:-} ]]; then
-    cargo build --release --workspace --manifest-path "$root/Cargo.toml"
+    if [[ -n ${PROFILE:-} ]]; then
+        RUSTFLAGS="-C force-frame-pointers=yes" CARGO_PROFILE_RELEASE_DEBUG=line-tables-only \
+            cargo build --release --workspace --manifest-path "$root/Cargo.toml" \
+            --target-dir "$root/target/profiling"
+    else
+        cargo build --release --workspace --manifest-path "$root/Cargo.toml"
+    fi
 fi
 
 # The binaries and the agent, where the server runs them.
 if [[ $where == local ]]; then
-    bin_dir=$root/target/release
+    bin_dir=$built
     log_dir=$remote_dir/logs
     mkdir -p "$log_dir"
 else
@@ -206,8 +222,7 @@ else
         ssh_to "$host" "mkdir -p $bin_dir $log_dir"
         scp -q "${SSH_OPTS[@]}" "$root/bench/agent.sh" "ubuntu@$host:$remote_dir/"
     done
-    scp -q "${SSH_OPTS[@]}" "$root/target/release/slopio-server" \
-        "$root/target/release/hyper-server" "ubuntu@$SERVER_IP:$bin_dir/"
+    scp -q "${SSH_OPTS[@]}" "$built/slopio-server" "$built/hyper-server" "ubuntu@$SERVER_IP:$bin_dir/"
 fi
 
 if [[ -n ${PROFILE:-} ]] && ! on_server "$agent perf-setup" > /dev/null; then
@@ -408,12 +423,17 @@ run_conns() {
     on_server "$agent stop $pid"
     on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
 
-    # Where the time went: by object (the kernel, the server, libc), then by
-    # function, each by the samples taken in it rather than below it.
+    # Where the time went: by object (the kernel, the server, libc); by
+    # function, each by the samples taken in it; by function again, each by
+    # the samples in it and in everything it called; and the call chains
+    # that lead to the costliest functions, inlined frames shown.
     if [[ -n ${PROFILE:-} ]]; then
-        local report="perf report -i $log_dir/$tag.perf.data --no-children -g none --stdio --percent-limit 0.5"
-        on_server "$report --sort dso 2> /dev/null | grep -v -e '^#' -e '^$'" > "$out/raw/$tag.perf-dso.txt" || true
-        on_server "$report --sort dso,sym 2> /dev/null | grep -v -e '^#' -e '^$' | head -60" > "$out/raw/$tag.perf-sym.txt" || true
+        local data="perf report -i $log_dir/$tag.perf.data --stdio"
+        local clean="grep -v -e '^#' -e '^\$'"
+        on_server "$data --no-children -g none --sort dso --percent-limit 0.5 2> /dev/null | $clean" > "$out/raw/$tag.perf-dso.txt" || true
+        on_server "$data --no-children -g none --sort dso,sym --percent-limit 0.5 2> /dev/null | $clean | head -60" > "$out/raw/$tag.perf-sym.txt" || true
+        on_server "$data --children -g none --sort sym --inline --percent-limit 1 2> /dev/null | $clean | head -120" > "$out/raw/$tag.perf-inclusive.txt" || true
+        on_server "$data --no-children --sort sym --inline -g caller,0.5,callee,function,percent --percent-limit 1.5 2> /dev/null | $clean | head -1500" > "$out/raw/$tag.perf-callers.txt" || true
     fi
 
     if ! grep -q "^finished in" "$out/raw/$tag.h2load.txt"; then
