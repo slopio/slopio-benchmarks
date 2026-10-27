@@ -101,7 +101,7 @@ sysctl --system
 systemctl disable --now unattended-upgrades.service apt-daily.timer apt-daily-upgrade.timer || true
 apt-get -o DPkg::Lock::Timeout=600 update
 DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 install -y \
-    nghttp2-client sysstat ethtool
+    nghttp2-client sysstat ethtool binutils
 EOF
 
 launch() {

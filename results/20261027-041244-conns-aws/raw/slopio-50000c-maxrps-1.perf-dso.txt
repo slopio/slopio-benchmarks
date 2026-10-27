@@ -1,0 +1,4 @@
+    55.95%  [kernel.kallsyms]
+    37.97%  slopio-server    
+     4.08%  [ena]            
+     1.90%  libc.so.6        

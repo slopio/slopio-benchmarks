@@ -1,0 +1,48 @@
+     5.21%  slopio-server      [.] <slopio_h2::shared::connection::shared_connection::SharedConnection>::write_response
+     4.05%  [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+     2.96%  [kernel.kallsyms]  [k] apparmor_socket_recvmsg
+     2.65%  [kernel.kallsyms]  [k] fget
+     2.58%  slopio-server      [.] __aarch64_ldadd8_relax
+     2.39%  slopio-server      [.] __aarch64_ldadd8_rel
+     2.38%  [kernel.kallsyms]  [k] aa_inet_msg_perm
+     2.33%  [kernel.kallsyms]  [k] __inet_lookup_established
+     1.97%  slopio-server      [.] <slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router> as slopio_h2::shared::codec::frames::FrameHandler>::on_headers
+     1.94%  slopio-server      [.] runtime_core::task::inner_parts::typed_task::poll::<<slopio_h2::server::connection::Connection<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512>, slopio_h2::server::router::Router>>::run::{closure#0}>
+     1.92%  [kernel.kallsyms]  [k] tcp_recvmsg_locked
+     1.81%  [kernel.kallsyms]  [k] __arch_copy_from_user
+     1.75%  [kernel.kallsyms]  [k] __pi_memcpy_generic
+     1.59%  slopio-server      [.] <slopio_h2::shared::hpack::decoder::Table>::get
+     1.46%  [ena]              [k] ena_start_xmit
+     1.41%  [kernel.kallsyms]  [k] __io_run_local_work
+     1.39%  slopio-server      [.] <slopio_h2::shared::connection::stream_map::StreamMap<slopio_h2::server::stream::StreamState, runtime_core::task::handle::Handle<()>>>::insert
+     1.35%  slopio-server      [.] <slopio_h2::server::connection::Connection<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring4x8192>, slopio_h2::server::router::Router>>::drain::{closure#0}
+     1.33%  slopio-server      [.] runtime_core::io_driver::operations::sockets::send_vectored::send_vectored_all::<slopio_h2::shared::connection::output::Chunk>::{closure#0}
+     1.32%  slopio-server      [.] <slopio_h2::shared::codec::frames::head::Head>::encode::<alloc::vec::Vec<u8>>
+     1.29%  slopio-server      [.] <slopio_h2::shared::connection::output::Output>::open
+     1.18%  [kernel.kallsyms]  [k] sock_from_file
+     1.13%  [kernel.kallsyms]  [k] llist_reverse_order
+     1.07%  libc.so.6          [.] 0x00000000000a1c34
+     1.05%  slopio-server      [.] runtime_core::task::waker::wake_by_ref::<slopio_h2::server::handler::ContainPanic<<slopio_h2::server::handler::Incoming>::spawn<<slopio_h2::server::router::Router>::route<slopio_server::routes::payload, slopio_server::routes::payload::{closure#0}>::{closure#0}::{closure#0}, slopio_server::routes::payload::{closure#0}>::{closure#0}>>
+     1.01%  [kernel.kallsyms]  [k] __arch_copy_to_user
+     0.89%  [kernel.kallsyms]  [k] kfree
+     0.89%  slopio-server      [.] slopio_h2::server::connection::shared_with_streams::retire_if_closed
+     0.84%  slopio-server      [.] <slopio_h2::server::connection::Connection<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring4x8192>, slopio_h2::server::router::Router>>::flush::{closure#0}
+     0.81%  [kernel.kallsyms]  [k] apparmor_socket_sendmsg
+     0.81%  slopio-server      [.] <slopio_h2::shared::connection::shared_connection::SharedConnection>::restore_output
+     0.81%  [kernel.kallsyms]  [k] arch_counter_get_cntvct
+     0.79%  [kernel.kallsyms]  [k] ____sys_sendmsg
+     0.78%  [kernel.kallsyms]  [k] __pi_memset_generic
+     0.76%  [kernel.kallsyms]  [k] check_heap_object
+     0.75%  [kernel.kallsyms]  [k] tcp_event_new_data_sent
+     0.72%  [kernel.kallsyms]  [k] _raw_spin_lock
+     0.70%  slopio-server      [.] runtime_core::task::inner_parts::typed_task::poll::<slopio_h2::server::handler::ContainPanic<<slopio_h2::server::handler::Incoming>::spawn<<slopio_h2::server::router::Router>::route<slopio_server::routes::payload, slopio_server::routes::payload::{closure#0}>::{closure#0}::{closure#0}, slopio_server::routes::payload::{closure#0}>::{closure#0}>>
+     0.66%  [ena]              [k] ena_clean_rx_irq
+     0.64%  slopio-server      [.] <slopio_h2::shared::codec::frames::headers::Headers>::load_hpack
+     0.62%  slopio-server      [.] <runtime_core::io_driver::IODriver>::poll_op_multishot
+     0.59%  [kernel.kallsyms]  [k] __tcp_transmit_skb
+     0.59%  [kernel.kallsyms]  [k] kmem_cache_alloc_node_noprof
+     0.58%  slopio-server      [.] std::sys::backtrace::__rust_begin_short_backtrace::<runtime::topology::thread::spawn<slopio_server::Ring64x128p512, (), runtime::topology::launcher<slopio_server::Ring64x128p512, (), slopio_server::start<slopio_server::Ring64x128p512>::{closure#1}, slopio_server::serve<slopio_server::Ring64x128p512>::{closure#0}>::{closure#0}::{closure#0}, slopio_server::serve<slopio_server::Ring64x128p512>::{closure#0}>::{closure#0}, ()>
+     0.55%  [kernel.kallsyms]  [k] tcp_sendmsg_locked
+     0.54%  [kernel.kallsyms]  [k] try_charge_memcg
+     0.51%  [kernel.kallsyms]  [k] tcp_clean_rtx_queue
+     0.51%  slopio-server      [.] <runtime_core::io_driver::operations::sockets::multi_recv::MultiRecv<slopio_server::Ring64x128p512, runtime_core::io_driver::operations::sockets::SocketWrapper, 32>>::try_drain_one

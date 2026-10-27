@@ -1,0 +1,43 @@
+     5.37%  hyper-server       [.] __aarch64_cas4_acq
+     4.55%  hyper-server       [.] __aarch64_swp4_rel
+     3.99%  hyper-server       [.] <h2::proto::connection::Connection<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::server::Peer, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>::poll
+     3.39%  hyper-server       [.] <h2::frame::headers::HeaderBlock>::into_encoding
+     3.04%  [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+     3.02%  [kernel.kallsyms]  [k] __fget_files
+     2.78%  hyper-server       [.] __aarch64_ldadd8_relax
+     2.70%  hyper-server       [.] __aarch64_ldadd8_rel
+     2.26%  hyper-server       [.] <h2::server::Peer as h2::proto::peer::Peer>::convert_poll_message
+     1.85%  hyper-server       [.] <tokio::runtime::runtime::Runtime>::block_on::<hyper_server::serve::{closure#0}>
+     1.80%  [kernel.kallsyms]  [k] aa_inet_msg_perm
+     1.58%  [kernel.kallsyms]  [k] __inet_lookup_established
+     1.43%  hyper-server       [.] _mi_page_malloc
+     1.33%  hyper-server       [.] <h2::proto::streams::counts::Counts>::transition_after
+     1.31%  [kernel.kallsyms]  [k] vfs_writev
+     1.31%  hyper-server       [.] <h2::hpack::header::Header as core::clone::Clone>::clone
+     1.24%  [kernel.kallsyms]  [k] __pi_memcpy_generic
+     1.17%  [kernel.kallsyms]  [k] tcp_recvmsg_locked
+     1.11%  [ena]              [k] ena_start_xmit
+     1.06%  [kernel.kallsyms]  [k] apparmor_socket_recvmsg
+     1.04%  hyper-server       [.] <tokio::runtime::io::registration::Registration>::poll_ready
+     1.01%  [kernel.kallsyms]  [k] el0_svc
+     1.00%  hyper-server       [.] <h2::proto::streams::buffer::Deque>::push_back::<h2::proto::streams::recv::Event>
+     1.00%  [kernel.kallsyms]  [k] __sys_recvfrom
+     0.99%  hyper-server       [.] __aarch64_ldadd8_acq_rel
+     0.98%  [kernel.kallsyms]  [k] apparmor_socket_sendmsg
+     0.96%  hyper-server       [.] hyper_server::serve::{closure#0}::{closure#2}
+     0.94%  hyper-server       [.] <h2::proto::streams::buffer::Deque>::push_back::<h2::frame::Frame<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>
+     0.93%  [kernel.kallsyms]  [k] __tcp_transmit_skb
+     0.90%  [kernel.kallsyms]  [k] aa_file_perm
+     0.90%  [kernel.kallsyms]  [k] __pi_memset_generic
+     0.90%  [kernel.kallsyms]  [k] _raw_spin_lock
+     0.87%  [kernel.kallsyms]  [k] arch_counter_get_cntvct
+     0.78%  [kernel.kallsyms]  [k] kfree
+     0.73%  [kernel.kallsyms]  [k] handle_softirqs
+     0.71%  hyper-server       [.] <h2::proto::streams::store::VacantEntry>::insert
+     0.64%  hyper-server       [.] <h2::proto::connection::DynConnection<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>::recv_frame
+     0.59%  hyper-server       [.] __aarch64_cas8_acq_rel
+     0.57%  [kernel.kallsyms]  [k] __arch_copy_from_user
+     0.56%  libc.so.6          [.] 0x00000000000a1bac
+     0.56%  [kernel.kallsyms]  [k] __arch_copy_to_user
+     0.55%  [kernel.kallsyms]  [k] kmem_cache_free
+     0.55%  [kernel.kallsyms]  [k] tcp_event_new_data_sent

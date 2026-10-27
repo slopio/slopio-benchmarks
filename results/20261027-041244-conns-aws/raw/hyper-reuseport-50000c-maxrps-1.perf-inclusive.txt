@@ -1,0 +1,200 @@
+   100.00%     0.00%  [.] CPU_SET (inlined)
+   100.00%     0.00%  [.] __rust_begin_short_backtrace<hyper_server::main::{closure#0}::{closure_env#0}, ()> (inlined)
+   100.00%     0.00%  [.] call_once<(), (dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send), alloc::alloc::Global> (inlined)
+   100.00%     0.00%  [.] drop<(dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send), alloc::alloc::Global> (inlined)
+   100.00%     0.00%  [.] for_value_raw<(dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send)> (inlined)
+   100.00%     0.00%  [.] main (inlined)
+   100.00%     0.00%  [.] pin_core (inlined)
+   100.00%     0.00%  [.] size_of_val_raw<(dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send)> (inlined)
+   100.00%     0.00%  [.] thread_start (inlined)
+   100.00%     0.00%  [.] {closure#0} (inlined)
+   100.00%     0.00%  [.] 0x0000e5a65407582c
+   100.00%     0.00%  [.] 0x0000e5a6540dbb4c
+    99.98%     0.00%  [.] block_on<hyper_server::serve::{async_fn_env#0}> (inlined)
+    99.98%     0.00%  [.] block_on_inner<hyper_server::serve::{async_fn_env#0}> (inlined)
+    99.98%     0.00%  [.] enter<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>> (inlined)
+    99.98%     0.00%  [.] enter_runtime<tokio::runtime::scheduler::current_thread::{impl#0}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, ()> (inlined)
+    99.98%     0.00%  [.] set<tokio::runtime::scheduler::Context, tokio::runtime::scheduler::current_thread::{impl#9}::enter::{closure_env#0}<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>>, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>)> (inlined)
+    99.98%     0.00%  [.] set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>), tokio::runtime::scheduler::current_thread::{impl#9}::enter::{closure_env#0}<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>>> (inlined)
+    99.98%     0.00%  [.] try_with<tokio::runtime::context::Context, tokio::runtime::context::set_scheduler::{closure_env#0}<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>), tokio::runtime::scheduler::current_thread::{impl#9}::enter::{closure_env#0}<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>>>, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>)> (inlined)
+    99.98%     0.00%  [.] with<tokio::runtime::context::Context, tokio::runtime::context::set_scheduler::{closure_env#0}<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>), tokio::runtime::scheduler::current_thread::{impl#9}::enter::{closure_env#0}<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>>>, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>)> (inlined)
+    99.98%     0.00%  [.] {closure#0}<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core, alloc::alloc::Global>, core::option::Option<()>), tokio::runtime::scheduler::current_thread::{impl#9}::enter::{closure_env#0}<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>>> (inlined)
+    99.98%     0.00%  [.] {closure#0}<hyper_server::serve::{async_fn_env#0}> (inlined)
+    99.98%     0.00%  [.] {closure#0}<tokio::runtime::scheduler::current_thread::{impl#9}::block_on::{closure_env#0}<hyper_server::serve::{async_fn_env#0}>, core::option::Option<()>> (inlined)
+    97.50%     0.00%  [.] enter<(), tokio::runtime::scheduler::current_thread::{impl#3}::run_task::{closure_env#0}> (inlined)
+    97.50%     0.00%  [.] run_task (inlined)
+    97.49%     0.00%  [.] budget<(), tokio::runtime::scheduler::current_thread::{impl#3}::run_task::{closure#0}::{closure_env#0}> (inlined)
+    97.49%     0.00%  [.] with_budget<(), tokio::runtime::scheduler::current_thread::{impl#3}::run_task::{closure#0}::{closure_env#0}> (inlined)
+    97.49%     0.00%  [.] {closure#0} (inlined)
+    95.38%     0.00%  [.] drop_glue<core::result::Result<tokio::task::coop::with_budget::ResetGuard, std::thread::local::AccessError>> (inlined)
+    80.60%     0.00%  [.] poll<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    80.58%     0.00%  [.] poll_inner<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    80.46%     0.00%  [.] {closure#0} (inlined)
+    80.45%     0.00%  [.] catch_unwind<core::panic::unwind_safe::AssertUnwindSafe<tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>>, core::task::poll::Poll<()>> (inlined)
+    80.45%     0.00%  [.] catch_unwind<core::task::poll::Poll<()>, core::panic::unwind_safe::AssertUnwindSafe<tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>>> (inlined)
+    80.45%     0.00%  [.] do_call<core::panic::unwind_safe::AssertUnwindSafe<tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>>, core::task::poll::Poll<()>> (inlined)
+    80.45%     0.00%  [.] poll_future<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    80.45%     0.00%  [.] call_once<core::task::poll::Poll<()>, tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>> (inlined)
+    80.45%     0.00%  [.] with_mut<tokio::runtime::task::core::Stage<hyper_server::serve::{async_fn#0}::{async_block_env#2}>, core::task::poll::Poll<()>, tokio::runtime::task::core::{impl#6}::poll::{closure_env#0}<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>> (inlined)
+    80.45%     0.00%  [.] {closure#0}<hyper_server::serve::{async_fn#0}::{async_block_env#2}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    80.44%     0.00%  [.] set_current_task_id (inlined)
+    80.44%     0.00%  [.] try_with<tokio::runtime::context::Context, tokio::runtime::context::set_current_task_id::{closure_env#0}, core::option::Option<tokio::runtime::task::id::Id>> (inlined)
+    80.43%     0.00%  [.] call_once<tokio::runtime::context::CONTEXT::{constant#0}::{closure_env#0}, (core::option::Option<&mut core::option::Option<tokio::runtime::context::Context>>)> (inlined)
+    80.43%     0.00%  [.] get<tokio::runtime::context::Context> (inlined)
+    80.43%     0.00%  [.] drop (inlined)
+    80.43%     0.00%  [.] drop_glue<tokio::runtime::task::core::TaskIdGuard> (inlined)
+    80.43%     0.00%  [.] get<std::sys::thread_local::native::eager::State> (inlined)
+    79.35%     0.00%  [.] {async_block#2} (inlined)
+    79.15%     0.00%  [.] poll<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>, hyper::service::util::ServiceFn<fn(http::request::Request<hyper::body::incoming::Incoming>) -> hyper_server::routes::route::{async_fn_env#0}, hyper::body::incoming::Incoming>, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor> (inlined)
+    79.15%     0.00%  [.] poll<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>, hyper_server::routes::Body, hyper::service::util::ServiceFn<fn(http::request::Request<hyper::body::incoming::Incoming>) -> hyper_server::routes::route::{async_fn_env#0}, hyper::body::incoming::Incoming>, hyper_util::rt::tokio::TokioExecutor> (inlined)
+    78.96%     0.00%  [.] poll_server<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>, hyper_server::routes::Body, hyper::service::util::ServiceFn<fn(http::request::Request<hyper::body::incoming::Incoming>) -> hyper_server::routes::route::{async_fn_env#0}, hyper::body::incoming::Incoming>, hyper_util::rt::tokio::TokioExecutor> (inlined)
+    76.95%     0.00%  [.] poll_accept<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+    76.31%     0.00%  [.] poll_closed<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+    76.31%     0.00%  [.] map_err<(), h2::proto::error::Error, h2::error::Error, fn(h2::proto::error::Error) -> h2::error::Error> (inlined)
+    70.53%     0.00%  [.] poll<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::server::Peer, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+    38.40%     0.00%  [.] el0t_64_sync
+    38.40%     0.00%  [.] el0t_64_sync_handler
+    38.38%     1.01%  [.] el0_svc
+    38.22%     0.00%  [.] {closure#0} (inlined)
+    38.21%     0.00%  [.] cvt<isize> (inlined)
+    37.16%     0.02%  [.] do_el0_svc
+    37.13%     0.05%  [.] el0_svc_common.constprop.0
+    37.05%     0.09%  [.] invoke_syscall
+    35.70%     0.00%  [.] poll_complete<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>, h2::server::Peer, hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>> (inlined)
+    34.44%     0.00%  [.] poll2<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::server::Peer, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+    26.48%     0.00%  [.] poll_next<h2::codec::framed_write::FramedWrite<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>> (inlined)
+    26.48%     0.00%  [.] poll_next<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>> (inlined)
+    21.41%     0.00%  [.] flush<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>> (inlined)
+    21.40%     0.00%  [.] poll_ready<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>> (inlined)
+    21.32%     0.00%  [.] poll_write_buf<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, bytes::buf::chain::Chain<&mut core::io::cursor::Cursor<bytes::bytes_mut::BytesMut>, &mut h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>> (inlined)
+    21.13%     0.00%  [.] poll_write_vectored (inlined)
+    21.12%     0.00%  [.] poll_io<usize, tokio::io::poll_evented::{impl#6}::poll_write_vectored::{closure_env#0}<mio::net::tcp::stream::TcpStream>> (inlined)
+    21.12%     0.00%  [.] poll_write_io<usize, tokio::io::poll_evented::{impl#6}::poll_write_vectored::{closure_env#0}<mio::net::tcp::stream::TcpStream>> (inlined)
+    21.12%     0.00%  [.] poll_write_vectored<mio::net::tcp::stream::TcpStream> (inlined)
+    21.12%     0.00%  [.] poll_write_vectored_priv (inlined)
+    21.09%     0.00%  [.] do_io<std::net::tcp::TcpStream, mio::net::tcp::stream::{impl#4}::write_vectored::{closure_env#0}, usize> (inlined)
+    21.09%     0.00%  [.] write_vectored (inlined)
+    21.09%     0.00%  [.] {closure#0}<mio::net::tcp::stream::TcpStream> (inlined)
+    21.04%     0.33%  [.] writev
+    20.28%     0.00%  [.] poll_next<h2::codec::framed_write::FramedWrite<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>, tokio_util::codec::length_delimited::LengthDelimitedCodec, tokio_util::codec::framed_impl::ReadFrame> (inlined)
+    20.28%     0.00%  [.] poll_next<h2::codec::framed_write::FramedWrite<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>, tokio_util::codec::length_delimited::LengthDelimitedCodec> (inlined)
+    19.55%     0.02%  [.] __arm64_sys_writev
+    19.51%     0.03%  [.] do_writev
+    18.99%     0.00%  [.] poll_read_buf<h2::codec::framed_write::FramedWrite<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>, bytes::bytes_mut::BytesMut> (inlined)
+    18.96%     0.00%  [.] poll_read<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>> (inlined)
+    18.93%     0.00%  [.] poll_read<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>> (inlined)
+    18.86%     0.00%  [.] poll_read<tokio::net::tcp::stream::TcpStream> (inlined)
+    18.79%     0.00%  [.] poll_read (inlined)
+    18.76%     0.00%  [.] poll_read<mio::net::tcp::stream::TcpStream> (inlined)
+    18.76%     0.00%  [.] poll_read_priv (inlined)
+    17.41%     1.31%  [.] vfs_writev
+    17.13%     0.00%  [.] do_io<std::net::tcp::TcpStream, mio::net::tcp::stream::{impl#2}::read::{closure_env#0}, usize> (inlined)
+    17.13%     0.00%  [.] read (inlined)
+    17.13%     0.00%  [.] recv_with_flags (inlined)
+    17.10%     0.36%  [.] recv
+    16.67%     0.00%  [.] ____do_softirq
+    16.67%     0.00%  [.] __do_softirq
+    16.67%     0.00%  [.] call_on_irq_stack
+    16.67%     0.00%  [.] do_softirq_own_stack
+    16.66%     0.73%  [.] handle_softirqs
+    15.62%     0.02%  [.] __arm64_sys_recvfrom
+    15.58%     0.04%  [.] net_rx_action
+    15.54%     0.00%  [.] __irq_exit_rcu
+    15.54%     0.00%  [.] irq_exit_rcu
+    15.49%     0.00%  [.] __napi_poll
+    15.47%     0.05%  [.] ena_io_poll
+    15.44%     1.00%  [.] __sys_recvfrom
+    14.48%     0.00%  [.] poll<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    14.32%     0.03%  [.] do_iter_readv_writev
+    14.27%     0.09%  [.] sock_write_iter
+    14.17%     0.02%  [.] __sock_sendmsg
+    13.63%     0.00%  [.] buffer_pending<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+    13.07%     0.00%  [.] poll_inner<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    13.04%     0.00%  [.] poll_future<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    13.04%     0.00%  [.] {closure#0}<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>> (inlined)
+    13.03%     0.00%  [.] call_once<core::task::poll::Poll<()>, tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>> (inlined)
+    13.03%     0.00%  [.] catch_unwind<core::panic::unwind_safe::AssertUnwindSafe<tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>>, core::task::poll::Poll<()>> (inlined)
+    13.03%     0.00%  [.] catch_unwind<core::task::poll::Poll<()>, core::panic::unwind_safe::AssertUnwindSafe<tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>>> (inlined)
+    13.03%     0.00%  [.] do_call<core::panic::unwind_safe::AssertUnwindSafe<tokio::runtime::task::harness::poll_future::{closure_env#0}<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>>, core::task::poll::Poll<()>> (inlined)
+    12.40%     0.02%  [.] sock_recvmsg
+    12.37%     0.00%  [.] {closure#0} (inlined)
+    12.37%     0.00%  [.] set_current_task_id (inlined)
+    12.37%     0.00%  [.] try_with<tokio::runtime::context::Context, tokio::runtime::context::set_current_task_id::{closure_env#0}, core::option::Option<tokio::runtime::task::id::Id>> (inlined)
+    12.37%     0.00%  [.] call_once<tokio::runtime::context::CONTEXT::{constant#0}::{closure_env#0}, (core::option::Option<&mut core::option::Option<tokio::runtime::context::Context>>)> (inlined)
+    12.37%     0.00%  [.] get<tokio::runtime::context::Context> (inlined)
+    12.36%     0.00%  [.] with_mut<tokio::runtime::task::core::Stage<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>>, core::task::poll::Poll<()>, tokio::runtime::task::core::{impl#6}::poll::{closure_env#0}<hyper::proto::h2::server::H2Stream<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle, alloc::alloc::Global>>> (inlined)
+    12.36%     0.00%  [.] drop (inlined)
+    12.36%     0.00%  [.] drop_glue<tokio::runtime::task::core::TaskIdGuard> (inlined)
+    12.36%     0.00%  [.] get<std::sys::thread_local::native::eager::State> (inlined)
+    12.11%     0.00%  [.] poll<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor, core::convert::Infallible> (inlined)
+    12.10%     0.00%  [.] poll2<hyper_server::routes::route::{async_fn_env#0}, hyper_server::routes::Body, hyper_util::rt::tokio::TokioExecutor, core::convert::Infallible> (inlined)
+    11.88%     0.01%  [.] inet_sendmsg
+    11.84%     0.01%  [.] tcp_sendmsg
+    11.39%     0.36%  [.] tcp_sendmsg_locked
+    10.12%     0.00%  [.] __el0_irq_handler_common
+    10.12%     0.00%  [.] el0_interrupt
+    10.12%     0.00%  [.] el0t_64_irq
+    10.12%     0.00%  [.] el0t_64_irq_handler
+    10.08%     0.04%  [.] netif_receive_skb_list_internal
+     9.97%     0.02%  [.] inet_recvmsg
+     9.88%     0.05%  [.] tcp_recvmsg
+     9.74%     0.03%  [.] __netif_receive_skb_list_core
+     9.74%     0.93%  [.] __tcp_transmit_skb
+     9.55%     0.02%  [.] ip_list_rcv
+     9.48%     1.17%  [.] tcp_recvmsg_locked
+     9.38%     0.01%  [.] ip_sublist_rcv
+     9.36%     0.03%  [.] ip_list_rcv_finish
+     8.26%     0.03%  [.] ip_sublist_rcv_finish
+     8.24%     0.04%  [.] ip_local_deliver
+     8.20%     0.03%  [.] ip_local_deliver_finish
+     8.16%     0.02%  [.] ip_protocol_deliver_rcu
+     7.96%     0.45%  [.] ena_clean_rx_irq
+     7.95%     0.13%  [.] tcp_v4_rcv
+     7.92%     0.02%  [.] ip_queue_xmit
+     7.83%     0.17%  [.] __ip_queue_xmit
+     7.70%     0.05%  [.] tcp_push
+     7.63%     0.02%  [.] __tcp_push_pending_frames
+     7.50%     0.13%  [.] tcp_write_xmit
+     7.10%     0.10%  [.] ip_output
+     7.05%     0.00%  [.] branch<h2::proto::connection::ReceivedFrame, h2::proto::error::Error> (inlined)
+     6.94%     0.00%  [.] buffer<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>> (inlined)
+     6.93%     0.00%  [.] buffer<h2::proto::streams::prioritize::Prioritized<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>> (inlined)
+     6.92%     0.06%  [.] ip_finish_output
+     6.83%     0.06%  [.] __ip_finish_output
+     6.72%     0.00%  [.] recv_frame<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+     6.69%     0.00%  [.] recv_headers<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+     6.65%     0.32%  [.] ip_finish_output2
+     6.58%     0.00%  [.] encode (inlined)
+     6.57%     0.00%  [.] encode<h2::frame::headers::{impl#0}::encode::{closure_env#0}> (inlined)
+     6.45%     5.37%  [.] __aarch64_cas4_acq
+     6.25%     0.09%  [.] neigh_hh_output
+     6.18%     0.02%  [.] tcp_v4_do_rcv
+     6.13%     0.00%  [.] decode (inlined)
+     6.13%     0.00%  [.] decode_frame (inlined)
+     6.09%     0.20%  [.] __dev_queue_xmit
+     5.95%     0.22%  [.] tcp_rcv_established
+     5.76%     0.00%  [.] load_hpack (inlined)
+     5.70%     0.00%  [.] pop_frame<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+     5.69%     0.00%  [.] len (inlined)
+     5.63%     0.02%  [.] tcp_cleanup_rbuf
+     5.61%     0.06%  [.] __tcp_cleanup_rbuf
+     5.59%     0.00%  [.] into_encoding (inlined)
+     5.59%     0.00%  [.] load (inlined)
+     5.54%     0.00%  [.] decode<h2::frame::headers::{impl#18}::load::{closure_env#0}> (inlined)
+     5.44%     0.00%  [.] el1_interrupt
+     5.44%     0.00%  [.] el1h_64_irq
+     5.44%     0.00%  [.] el1h_64_irq_handler
+     5.44%     4.55%  [.] __aarch64_swp4_rel
+     5.39%     0.04%  [.] napi_complete_done
+     5.23%     0.01%  [.] tcp_send_ack
+     5.20%     0.06%  [.] __tcp_send_ack.part.0
+     5.11%     0.03%  [.] gro_receive_skb
+     4.87%     0.00%  [.] encode<h2::frame::headers::Iter> (inlined)
+     4.86%     0.00%  [.] transition<h2::proto::streams::streams::{impl#2}::recv_headers::{closure_env#0}<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>, core::result::Result<(), h2::proto::error::Error>> (inlined)
+     4.86%     0.00%  [.] {async_fn#0} (inlined)
+     4.76%     0.00%  [.] {closure#0}<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)
+     4.69%     0.00%  [.] recv_headers (inlined)
+     4.34%     0.27%  [.] __dev_xmit_skb
+     3.99%     3.99%  [.] <h2::proto::connection::Connection<hyper::common::io::compat::Compat<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, h2::server::Peer, hyper::proto::h2::SendBuf<bytes::bytes::Bytes>>>::poll
+     3.68%     3.02%  [k] __fget_files
+     3.43%     0.00%  [.] send_response<hyper::proto::h2::SendBuf<bytes::bytes::Bytes>> (inlined)

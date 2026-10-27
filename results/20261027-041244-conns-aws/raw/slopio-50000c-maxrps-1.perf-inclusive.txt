@@ -1,0 +1,200 @@
+   100.00%     0.00%  [.] as_ref<alloc::sync::ArcInner<std::thread::lifecycle::Packet<()>>> (inlined)
+   100.00%     0.00%  [.] call_once<(), (dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send), alloc::alloc::Global> (inlined)
+   100.00%     0.00%  [.] call_once<std::thread::lifecycle::spawn_unchecked::{closure_env#1}<runtime::topology::thread::spawn::{closure_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, ()>, ()> (inlined)
+   100.00%     0.00%  [.] deref<std::thread::lifecycle::Packet<()>, alloc::alloc::Global> (inlined)
+   100.00%     0.00%  [.] drop<(dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send), alloc::alloc::Global> (inlined)
+   100.00%     0.00%  [.] for_value_raw<(dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send)> (inlined)
+   100.00%     0.00%  [.] inner<std::thread::lifecycle::Packet<()>, alloc::alloc::Global> (inlined)
+   100.00%     0.00%  [.] size_of_val_raw<(dyn core::ops::function::FnOnce<(), Output=()> + core::marker::Send)> (inlined)
+   100.00%     0.00%  [.] thread_start (inlined)
+   100.00%     0.00%  [.] {closure#1}<runtime::topology::thread::spawn::{closure_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, ()> (inlined)
+   100.00%     0.00%  [.] 0x0000ffb9ef88582c
+   100.00%     0.00%  [.] 0x0000ffb9ef8ebb4c
+    99.96%     0.00%  [.] __rust_begin_short_backtrace<runtime::topology::thread::spawn::{closure_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, ()> (inlined)
+    99.96%     0.00%  [.] block_on<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>> (inlined)
+    99.96%     0.00%  [.] call_once<(), dyn core::ops::function::FnOnce<(), Output=()>, alloc::alloc::Global> (inlined)
+    99.96%     0.00%  [.] call_once<runtime_core::runtime::{impl#0}::block_on::{closure#0}::{closure#0}::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>>, ()> (inlined)
+    99.96%     0.00%  [.] install<(), alloc::boxed::Box<dyn core::ops::function::FnOnce<(), Output=()>, alloc::alloc::Global>> (inlined)
+    99.96%     0.00%  [.] run<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>> (inlined)
+    99.96%     0.00%  [.] set<runtime_core::io_driver::IODriver, runtime_core::runtime::{impl#0}::block_on::{closure_env#0}<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>>, ()> (inlined)
+    99.96%     0.00%  [.] set<runtime_core::runtime::TaskList, runtime_core::runtime::{impl#0}::block_on::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>>, ()> (inlined)
+    99.96%     0.00%  [.] set<runtime_core::runtime::time::TimeDriver, runtime_core::runtime::{impl#0}::block_on::{closure#0}::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>>, ()> (inlined)
+    99.96%     0.00%  [.] with<(), runtime_core::runtime::{impl#0}::block_on::{closure_env#0}<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>>> (inlined)
+    99.96%     0.00%  [.] {closure#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>> (inlined)
+    99.96%     0.00%  [.] {closure#0}<slopio_server::Ring64x128p512, runtime::topology::thread::run::{async_block_env#0}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, runtime::topology::thread::run::{closure_env#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>> (inlined)
+    99.96%     0.00%  [.] {closure#2}<slopio_server::Ring64x128p512, (), runtime::topology::launcher::{closure#0}::{closure_env#0}<slopio_server::Ring64x128p512, (), slopio_server::start::{closure_env#1}<slopio_server::Ring64x128p512>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>>, slopio_server::serve::{async_fn_env#0}<slopio_server::Ring64x128p512>> (inlined)
+    58.23%     0.00%  [.] process_completion_queue (inlined)
+    55.74%     0.00%  [.] enter_uring (inlined)
+    55.73%     0.00%  [.] enter_once (inlined)
+    55.72%     0.02%  [.] syscall
+    55.67%     0.00%  [.] el0t_64_sync
+    55.67%     0.00%  [.] el0t_64_sync_handler
+    55.67%     0.08%  [.] el0_svc
+    55.58%     0.00%  [.] do_el0_svc
+    55.57%     0.01%  [.] el0_svc_common.constprop.0
+    55.57%     0.02%  [.] invoke_syscall
+    55.50%     0.00%  [.] __arm64_sys_io_uring_enter
+    55.45%     0.01%  [.] __do_sys_io_uring_enter
+    45.43%     0.10%  [.] __io_issue_sqe
+    29.69%     0.22%  [.] io_submit_sqes
+    27.78%     0.08%  [.] io_issue_sqe
+    24.68%     0.00%  [.] poll<slopio_h2::server::connection::{impl#0}::run::{async_fn_env#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512, false>, slopio_h2::server::router::Router>> (inlined)
+    24.38%     1.41%  [.] __io_run_local_work
+    24.24%     0.08%  [.] io_sendmsg
+    24.00%     0.02%  [.] __sys_sendmsg_sock
+    23.98%     0.79%  [.] ____sys_sendmsg
+    23.38%     0.00%  [.] {async_fn#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512, false>, slopio_h2::server::router::Router> (inlined)
+    22.96%     0.03%  [.] __sock_sendmsg
+    21.84%     0.02%  [.] io_poll_task_func
+    21.69%     0.34%  [.] io_poll_check_events
+    21.57%     0.00%  [.] ____do_softirq
+    21.57%     0.00%  [.] __do_softirq
+    21.57%     0.00%  [.] call_on_irq_stack
+    21.57%     0.00%  [.] do_softirq_own_stack
+    21.56%     0.43%  [.] handle_softirqs
+    21.20%     0.06%  [.] io_poll_issue
+    20.72%     0.02%  [.] inet_sendmsg
+    20.62%     0.03%  [.] tcp_sendmsg
+    20.10%     0.04%  [.] net_rx_action
+    20.04%     0.00%  [.] __napi_poll
+    20.00%     0.03%  [.] ena_io_poll
+    19.89%     0.00%  [.] __irq_exit_rcu
+    19.89%     0.00%  [.] irq_exit_rcu
+    19.70%     0.55%  [.] tcp_sendmsg_locked
+    18.86%     0.07%  [.] io_recv
+    17.99%     0.31%  [.] sock_recvmsg
+    15.48%     0.00%  [.] el1_interrupt
+    15.48%     0.00%  [.] el1h_64_irq
+    15.48%     0.00%  [.] el1h_64_irq_handler
+    14.58%     0.66%  [.] ena_clean_rx_irq
+    14.55%     0.08%  [.] netif_receive_skb_list_internal
+    14.42%     0.00%  [.] poll<slopio_h2::server::handler::ContainPanic<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>>> (inlined)
+    14.36%     0.00%  [.] call_once<core::task::poll::Poll<()>, slopio_h2::server::handler::{impl#3}::poll::{closure_env#1}<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>>> (inlined)
+    14.36%     0.00%  [.] catch_unwind<core::panic::unwind_safe::AssertUnwindSafe<slopio_h2::server::handler::{impl#3}::poll::{closure_env#1}<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>>>, core::task::poll::Poll<()>> (inlined)
+    14.36%     0.00%  [.] catch_unwind<core::task::poll::Poll<()>, core::panic::unwind_safe::AssertUnwindSafe<slopio_h2::server::handler::{impl#3}::poll::{closure_env#1}<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>>>> (inlined)
+    14.36%     0.00%  [.] do_call<core::panic::unwind_safe::AssertUnwindSafe<slopio_h2::server::handler::{impl#3}::poll::{closure_env#1}<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>>>, core::task::poll::Poll<()>> (inlined)
+    14.36%     0.00%  [.] poll<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>> (inlined)
+    14.36%     0.00%  [.] {async_block#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}> (inlined)
+    14.36%     0.00%  [.] {closure#1}<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>> (inlined)
+    14.24%     0.01%  [.] io_cqring_wait
+    14.19%     0.00%  [k] io_run_local_work
+    14.10%     0.03%  [.] __netif_receive_skb_list_core
+    13.94%     0.00%  [.] {async_fn#0} (inlined)
+    13.91%     0.03%  [.] ip_list_rcv
+    13.71%     0.01%  [.] ip_sublist_rcv
+    13.69%     0.06%  [.] ip_list_rcv_finish
+    13.34%     0.00%  [.] decode_with<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>> (inlined)
+    13.32%     0.00%  [.] decode_inner<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>> (inlined)
+    13.27%     0.00%  [.] decode_buf<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>> (inlined)
+    12.97%     0.00%  [.] branch<(), ()> (inlined)
+    12.84%     0.00%  [.] dispatch_frame<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>> (inlined)
+    12.72%     0.10%  [.] tcp_push
+    12.61%     0.04%  [.] __tcp_push_pending_frames
+    12.39%     0.17%  [.] tcp_write_xmit
+    12.27%     0.02%  [.] ip_sublist_rcv_finish
+    12.25%     0.03%  [.] ip_local_deliver
+    12.22%     0.03%  [.] ip_local_deliver_finish
+    12.16%     0.03%  [.] ip_protocol_deliver_rcu
+    11.88%     0.27%  [.] tcp_v4_rcv
+    11.42%     0.00%  [.] io_run_local_work_locked
+    11.00%     0.05%  [.] gro_receive_skb
+    10.96%     0.00%  [.] as_ref<alloc::rc::RcInner<slopio_h2::server::stream::StreamState>> (inlined)
+    10.96%     0.00%  [.] inner<slopio_h2::server::stream::StreamState, alloc::alloc::Global> (inlined)
+     9.54%     0.00%  [.] write_headers (inlined)
+     9.53%     0.00%  [.] deref<slopio_h2::server::stream::StreamState, alloc::alloc::Global> (inlined)
+     9.53%     0.00%  [.] state (inlined)
+     9.45%     0.02%  [.] inet_recvmsg
+     9.37%     0.06%  [.] tcp_recvmsg
+     9.32%     0.59%  [.] __tcp_transmit_skb
+     9.31%     0.00%  [.] write_response (inlined)
+     8.87%     0.00%  [.] write_headers<core::iter::adapters::chain::Chain<core::iter::sources::once::Once<slopio_h2::shared::hpack::header::Header<core::option::Option<http::header::name::HeaderName>>>, core::iter::adapters::map::Map<http::header::map::Iter<http::header::value::HeaderValue>, slopio_h2::server::connection::shared_with_streams::{impl#2}::write_response::{closure_env#0}>>> (inlined)
+     8.86%     0.05%  [.] tcp_v4_do_rcv
+     8.61%     0.48%  [.] tcp_rcv_established
+     8.54%     1.92%  [.] tcp_recvmsg_locked
+     7.96%     0.03%  [.] security_socket_recvmsg
+     7.94%     0.01%  [.] ip_queue_xmit
+     7.92%     2.96%  [k] apparmor_socket_recvmsg
+     7.82%     0.19%  [.] __ip_queue_xmit
+     7.14%     0.07%  [.] ip_output
+     7.03%     0.00%  [.] submit_and_wait (inlined)
+     7.03%     0.00%  [.] enter<libc::unix::linux_like::linux::gnu::b64::sigset_t> (inlined)
+     7.03%     0.00%  [.] io_uring_enter (inlined)
+     6.97%     0.06%  [.] ip_finish_output
+     6.91%     0.00%  [.] load_hpack (inlined)
+     6.90%     0.00%  [.] load (inlined)
+     6.87%     0.06%  [.] __ip_finish_output
+     6.84%     0.00%  [.] decode<slopio_h2::shared::codec::frames::headers::{impl#2}::load::{closure_env#0}> (inlined)
+     6.71%     0.00%  [.] {async_fn#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring4x8192, false>, slopio_h2::server::router::Router> (inlined)
+     6.69%     0.28%  [.] ip_finish_output2
+     6.34%     0.07%  [.] neigh_hh_output
+     6.20%     0.15%  [.] __dev_queue_xmit
+     5.75%     0.00%  [.] encode<core::iter::adapters::chain::Chain<core::iter::sources::once::Once<slopio_h2::shared::hpack::header::Header<core::option::Option<http::header::name::HeaderName>>>, core::iter::adapters::map::Map<http::header::map::Iter<http::header::value::HeaderValue>, slopio_h2::server::connection::shared_with_streams::{impl#2}::write_response::{closure_env#0}>>> (inlined)
+     5.29%     0.00%  [.] drop_glue<bytes::bytes_mut::BytesMut> (inlined)
+     5.21%     5.21%  [.] <slopio_h2::shared::connection::shared_connection::SharedConnection>::write_response
+     4.77%     0.00%  [.] branch<slopio_h2::shared::hpack::decoder::Entry, slopio_h2::shared::hpack::decoder::DecoderError> (inlined)
+     4.50%     0.00%  [.] get (inlined)
+     4.46%     0.27%  [.] __dev_xmit_skb
+     4.42%     0.00%  [.] __el0_irq_handler_common
+     4.42%     0.00%  [.] el0_interrupt
+     4.42%     0.00%  [.] el0t_64_irq
+     4.42%     0.00%  [.] el0t_64_irq_handler
+     4.25%     4.05%  [k] _raw_spin_unlock_irqrestore
+     4.24%     0.00%  [.] clone (inlined)
+     4.11%     0.03%  [.] napi_complete_done
+     3.78%     0.03%  [.] tcp_data_ready
+     3.77%     0.00%  [.] index (inlined)
+     3.75%     0.46%  [.] sock_def_readable
+     3.70%     2.38%  [k] aa_inet_msg_perm
+     3.70%     0.00%  [.] {async_fn#0}<runtime_core::io_driver::operations::sockets::send_vectored::send_vectored_all::{async_fn_env#0}<slopio_h2::shared::connection::output::Chunk>> (inlined)
+     3.59%     0.01%  [.] skb_copy_datagram_iter
+     3.56%     0.08%  [.] __skb_datagram_iter
+     3.50%     0.10%  [.] sch_direct_xmit
+     3.39%     0.01%  [.] simple_copy_to_iter
+     3.38%     0.00%  [.] index_dynamic (inlined)
+     3.27%     2.65%  [k] fget
+     3.26%     0.04%  [.] io_file_get_normal
+     3.20%     0.00%  [.] poll<runtime_core::io_driver::operations::sockets::send_vectored::send_vectored_all::{async_fn_env#0}<slopio_h2::shared::connection::output::Chunk>, runtime_core::runtime::time::Sleep> (inlined)
+     3.10%     0.38%  [.] tcp_ack
+     3.06%     0.07%  [.] dev_hard_start_xmit
+     3.00%     0.00%  [.] {async_fn#0}<slopio_h2::shared::connection::output::Chunk> (inlined)
+     2.98%     0.00%  [.] write_frame<slopio_h2::shared::connection::shared_connection::{impl#1}::write_headers::{closure_env#0}<core::iter::adapters::chain::Chain<core::iter::sources::once::Once<slopio_h2::shared::hpack::header::Header<core::option::Option<http::header::name::HeaderName>>>, core::iter::adapters::map::Map<http::header::map::Iter<http::header::value::HeaderValue>, slopio_h2::server::connection::shared_with_streams::{impl#2}::write_response::{closure_env#0}>>>> (inlined)
+     2.93%     0.00%  [.] write<slopio_h2::shared::connection::shared_connection::{impl#1}::write_headers::{closure_env#0}<core::iter::adapters::chain::Chain<core::iter::sources::once::Once<slopio_h2::shared::hpack::header::Header<core::option::Option<http::header::name::HeaderName>>>, core::iter::adapters::map::Map<http::header::map::Iter<http::header::value::HeaderValue>, slopio_h2::server::connection::shared_with_streams::{impl#2}::write_response::{closure_env#0}>>>> (inlined)
+     2.87%     0.00%  [.] on_headers<slopio_h2::server::router::Router> (inlined)
+     2.86%     0.00%  [.] {closure#0}<core::iter::adapters::chain::Chain<core::iter::sources::once::Once<slopio_h2::shared::hpack::header::Header<core::option::Option<http::header::name::HeaderName>>>, core::iter::adapters::map::Map<http::header::map::Iter<http::header::value::HeaderValue>, slopio_h2::server::connection::shared_with_streams::{impl#2}::write_response::{closure_env#0}>>> (inlined)
+     2.83%     0.00%  [.] clone<http::header::name::HeaderName> (inlined)
+     2.82%     1.46%  [.] ena_start_xmit
+     2.78%     0.00%  [.] drop_glue<slopio_h2::server::connection::shared_with_streams::StreamToken> (inlined)
+     2.78%     0.00%  [.] drop_glue<slopio_h2::server::stream::Stream> (inlined)
+     2.71%     2.58%  [.] __aarch64_ldadd8_relax
+     2.66%     0.06%  [.] skb_do_copy_data_nocache
+     2.55%     2.39%  [.] __aarch64_ldadd8_rel
+     2.49%     0.00%  [.] drain<u64, alloc::alloc::Global, core::ops::range::RangeFull> (inlined)
+     2.49%     0.00%  [.] len<u64, alloc::alloc::Global> (inlined)
+     2.48%     0.00%  [.] drain_completions (inlined)
+     2.43%     0.03%  [.] tcp_stream_alloc_skb
+     2.37%     2.33%  [k] __inet_lookup_established
+     2.36%     0.51%  [.] tcp_clean_rtx_queue
+     2.17%     0.03%  [.] security_socket_sendmsg
+     2.16%     0.75%  [.] tcp_event_new_data_sent
+     2.15%     0.81%  [.] apparmor_socket_sendmsg
+     2.15%     0.00%  [.] {async_fn#0}<core::future::poll_fn::PollFn<slopio_h2::server::connection::{impl#0}::next_event::{closure_env#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512, false>, slopio_h2::server::router::Router>>> (inlined)
+     2.12%     1.81%  [.] __arch_copy_from_user
+     2.10%     1.18%  [.] sock_from_file
+     2.09%     0.05%  [.] __inet_lookup_skb
+     2.07%     0.00%  [.] next<io_uring::cqueue::Entry> (inlined)
+     2.02%     0.25%  [.] __local_bh_enable_ip
+     1.97%     1.97%  [.] <slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router> as slopio_h2::shared::codec::frames::FrameHandler>::on_headers
+     1.94%     1.94%  [.] runtime_core::task::inner_parts::typed_task::poll::<<slopio_h2::server::connection::Connection<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512>, slopio_h2::server::router::Router>>::run::{closure#0}>
+     1.91%     0.00%  [.] {async_fn#0}<slopio_h2::shared::connection::output::Chunk, runtime_core::io_driver::operations::sockets::send_vectored::send_vectored_all_with_flags::{async_fn#0}::{closure_env#0}<slopio_h2::shared::connection::output::Chunk>, runtime_core::io_driver::operations::sockets::send_vectored::WriteVectoredSocket<slopio_h2::shared::connection::output::Chunk>> (inlined)
+     1.90%     0.03%  [.] __check_object_size
+     1.83%     1.01%  [k] __arch_copy_to_user
+     1.82%     0.08%  [.] __check_object_size.part.0
+     1.81%     0.00%  [.] poll<core::future::poll_fn::PollFn<slopio_h2::server::connection::{impl#0}::next_event::{closure_env#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512, false>, slopio_h2::server::router::Router>>, runtime_core::runtime::time::Sleep> (inlined)
+     1.76%     0.00%  [.] wake_by_ref<slopio_h2::server::handler::ContainPanic<slopio_h2::server::handler::{impl#1}::spawn::{async_block_env#0}<slopio_h2::server::router::{impl#1}::route::{closure#0}::{closure_env#0}<fn(slopio_h2::server::stream::Stream, slopio_h2::server::router::Params) -> slopio_server::routes::payload::{async_fn_env#0}, slopio_server::routes::payload::{async_fn_env#0}>, slopio_server::routes::payload::{async_fn_env#0}>>> (inlined)
+     1.75%     1.75%  [k] __pi_memcpy_generic
+     1.73%     0.00%  [.] poll<slopio_h2::server::connection::Event<runtime_core::io_driver::buf_ring::BorrowedBuffer<slopio_server::Ring64x128p512>>, slopio_h2::server::connection::{impl#0}::next_event::{closure_env#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512, false>, slopio_h2::server::router::Router>> (inlined)
+     1.73%     0.00%  [.] {closure#0}<slopio_h2::shared::transport::PlainMessages<slopio_server::Ring64x128p512, false>, slopio_h2::server::router::Router> (inlined)
+     1.73%     0.00%  [.] create<slopio_h2::server::router::Router> (inlined)
+     1.68%     0.01%  [.] do_softirq
+     1.67%     0.76%  [.] check_heap_object
+     1.65%     0.00%  [.] name (inlined)

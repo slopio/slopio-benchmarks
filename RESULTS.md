@@ -258,6 +258,35 @@ The baseline here, 729k, is 7 % under the same setup an hour and a half
 earlier (786k), on another pair of instances: comparisons hold within a
 session, where the cases alternate, not across sessions.
 
+### Where slopio's time goes at 50,000 connections, call chains
+
+perf with call chains on both servers, built for it with frame pointers
+and line tables, the NIC's queues on the workers' CPUs and connections
+steered (`results/20261027-041244-conns-aws/raw/*.perf-*.txt`; the
+profiling costs ~5 %: 690k req/s for slopio, 547k for hyper). Shares of
+each server's own samples:
+
+| where                                                        | slopio | hyper reuseport |
+|--------------------------------------------------------------|--------|-----------------|
+| kernel, NIC driver included                                  | 60 %   | 48 %            |
+| HPACK, decoding requests' headers (`load_hpack`)             | 6.9 %  | 5.8 %           |
+| HPACK, encoding responses' heads (`encode`, `into_encoding`) | 5.8 %  | 5.6 %           |
+| out-of-line atomics, spread over many callers, none above 0.5 % | 5.0 % | 15.4 %        |
+| AppArmor, inclusive (`apparmor_socket_recvmsg` and below)    | 7.9 %  |                 |
+| the socket's file looked up on every io_uring submission (`fget` from `io_submit_sqes`) | 2.7 % | 3.0 % (`__fget_files`, from `writev` and `recvfrom`) |
+
+- **HPACK is the largest thing in slopio's own code**: 12.7 % of its time,
+  about 1.4 µs a request, against 1.65 µs in hyper's `h2`. Encoding a
+  three-field response head looks each name up in the dynamic table
+  (`index_dynamic`, 1.5 %); decoding a request walks `Table::get` (1.6 %)
+  and `on_headers` (2 %). Both servers pay it alike, and it is where slopio
+  could most cut its own cost.
+- **Every io_uring submission resolves the socket's file** (`io_issue_sqe`
+  → `io_file_get_normal` → `fget`): what registered (fixed) files would
+  spare.
+- **The atomics have no main caller**: `Bytes` and `BytesMut` reference
+  counts, cloned and dropped all over, rather than one site to fix.
+
 ### Not explained yet
 
 - **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a
