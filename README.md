@@ -16,9 +16,11 @@ HTTP/1.1), and implements the routes below.
 |-----------------|----------------------------------------|------------------|
 | `slopio-server` | slopio-h2 on the slopio runtime        | `servers/slopio` |
 | `hyper-server`  | hyper 1 on tokio                       | `servers/hyper`  |
+| `h2o-server`    | libh2o (h2o's library, epoll), in C    | `servers/h2o`    |
 
 ```sh
 cargo build --release
+servers/h2o/build.sh           # h2o's sources at a fixed revision, into target/
 PER_CORE=1 ./target/release/slopio-server
 PER_CORE=1 ./target/release/hyper-server
 h2load -D 10 -c 64 -m 32 -t 4 http://127.0.0.1:8080/

@@ -110,7 +110,7 @@ case $mode in
     single)
         default_server_cpus=0
         configs=${CONFIGS:-"1x1 16x16 64x32"}
-        servers=${SERVERS:-"slopio hyper"}
+        servers=${SERVERS:-"slopio hyper h2o"}
         ;;
     multi)
         if [[ $where == local ]]; then
@@ -119,7 +119,7 @@ case $mode in
             default_server_cpus=0-$((server_ncpu - 1))
         fi
         configs=${CONFIGS:-"16x16 64x32 256x16"}
-        servers=${SERVERS:-"slopio hyper-reuseport hyper-multi"}
+        servers=${SERVERS:-"slopio hyper-reuseport hyper-multi h2o"}
         ;;
     conns)
         default_server_cpus=0
@@ -128,7 +128,7 @@ case $mode in
         else
             configs=${CONFIGS:-"1000@1 10000@1 50000@1 1000@200 10000@20 50000@4"}
         fi
-        servers=${SERVERS:-"slopio hyper"}
+        servers=${SERVERS:-"slopio hyper h2o"}
         ;;
 esac
 server_cpus=${SERVER_CPUS:-$default_server_cpus}
@@ -141,7 +141,7 @@ fi
 per_core=
 if [[ $mode == multi || ($mode == conns && $server_cpus != 0) ]]; then
     per_core=PER_CORE=1
-    [[ $mode == conns ]] && servers=${SERVERS:-"slopio hyper-reuseport hyper-multi"}
+    [[ $mode == conns ]] && servers=${SERVERS:-"slopio hyper-reuseport hyper-multi h2o"}
 fi
 server_last=${BASH_REMATCH[2]:-0}
 if [[ $where == local ]]; then
@@ -182,12 +182,13 @@ server_bin() {
     case $1 in
         slopio) echo slopio-server ;;
         hyper | hyper-reuseport | hyper-multi) echo hyper-server ;;
+        h2o) echo h2o-server ;;
         *) echo "unknown server $1" >&2; exit 2 ;;
     esac
 }
 server_env() {
     case $1 in
-        slopio | hyper) echo "$per_core" ;;
+        slopio | hyper | h2o) echo "$per_core" ;;
         hyper-reuseport) echo "$per_core TOKIO_MODE=reuseport" ;;
         hyper-multi) echo "$per_core TOKIO_MODE=multi" ;;
     esac
@@ -208,11 +209,31 @@ if [[ -z ${SKIP_BUILD:-} ]]; then
     else
         cargo build --release --workspace --manifest-path "$root/Cargo.toml"
     fi
+    # libh2o's own release build, not the one above: no frame pointers when
+    # profiling, so its call chains stop at its own frames.
+    if [[ " $servers " == *" h2o "* ]]; then
+        "$root/servers/h2o/build.sh" > /dev/null
+    fi
 fi
+# Where the server's machine has a server's binary.
+server_path() {
+    if [[ $where == local ]]; then
+        binary "$(server_bin "$1")"
+    else
+        echo "$bin_dir/$(server_bin "$1")"
+    fi
+}
+# h2o-server is built by servers/h2o/build.sh, beside the Rust ones' target.
+binary() {
+    case $1 in
+        h2o-server) echo "$root/target/h2o/h2o-server" ;;
+        *) echo "$built/$1" ;;
+    esac
+}
 
 # The binaries and the agent, where the server runs them.
 if [[ $where == local ]]; then
-    bin_dir=$built
+    bin_dir=
     log_dir=$remote_dir/logs
     mkdir -p "$log_dir"
 else
@@ -222,7 +243,8 @@ else
         ssh_to "$host" "mkdir -p $bin_dir $log_dir"
         scp -q "${SSH_OPTS[@]}" "$root/bench/agent.sh" "ubuntu@$host:$remote_dir/"
     done
-    scp -q "${SSH_OPTS[@]}" "$built/slopio-server" "$built/hyper-server" "ubuntu@$SERVER_IP:$bin_dir/"
+    for name in $servers; do binary "$(server_bin "$name")"; done | sort -u |
+        xargs -I{} scp -q "${SSH_OPTS[@]}" {} "ubuntu@$SERVER_IP:$bin_dir/"
 fi
 
 if [[ -n ${PROFILE:-} ]] && ! on_server "$agent perf-setup" > /dev/null; then
@@ -283,7 +305,7 @@ run_one() {
     local url="http://$target_ip:$port/"
 
     local pid
-    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
+    pid=$(on_server "$agent start $server_cpus $(server_path "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
     if ! on_server "$agent listening $port"; then
         on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
         echo "$tag: the server never listened, see $out/raw/$tag.server.log" >&2
@@ -357,7 +379,7 @@ run_conns() {
     local url="http://$target_ip:$port/"
 
     local pid
-    pid=$(on_server "$agent start $server_cpus $bin_dir/$(server_bin "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
+    pid=$(on_server "$agent start $server_cpus $(server_path "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
     if ! on_server "$agent listening $port"; then
         on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
         echo "$tag: the server never listened, see $out/raw/$tag.server.log" >&2

@@ -1,0 +1,1 @@
+slopio-server on :18080 (h2c), ring 64x128+512, per_core=false, zero_copy=false, max_streams=64, stream_window=1048576
