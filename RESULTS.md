@@ -231,6 +231,33 @@ req/s, against 95k with the interrupts kept on other CPUs (1.07M on 11.3)
 and 92k with irqbalance (944k on 10.2), those from other sessions. Steered
 the same way on the same 8 CPUs, hyper did 603k: slopio 1.30×.
 
+### NAPI busy polling, at full load
+
+The runtime's `RingOptions::napi_busy_poll` (`f2c6e71`, off by default)
+registers each worker's ring for NAPI busy polling; slopio-server's
+`NAPI_BUSY_POLL_US` and `NAPI_PREFER` turn it on. Same machine, the NIC's
+queue n and XPS on CPU n (0-7), connections steered, 50,000 connections as
+fast as they can go, the three alternating
+(`results/20261027-033835-conns-aws` to `20261027-034137-conns-aws`):
+
+| slopio                                                   | runs        | median | machine CPUs busy | of it in interrupts |
+|----------------------------------------------------------|-------------|--------|-------------------|---------------------|
+| no NAPI                                                  | 728k, 729k  | 729k   | 8.01              | 1.68                |
+| NAPI, 50 µs                                              | 727k, 729k  | 728k   | 8.01              | 1.67                |
+| NAPI, 50 µs, `prefer_busy_poll`, `napi_defer_hard_irqs` 2, `gro_flush_timeout` 200 µs | 706k, 708k | 707k | 8.01 | 2.15 |
+
+No effect, then a small loss. io_uring busy-polls only while a thread
+waits for completions, and saturated workers hardly wait: they never poll.
+With `prefer_busy_poll` the kernel trades the queue's interrupts for a timer,
+counting on the workers to poll; they do not, and packets wait for the
+timer. NAPI is for load below saturation, where workers wait between
+packets and latency is the point: still to measure, and with a load
+generator that does not send every connection's request at the same instant.
+
+The baseline here, 729k, is 7 % under the same setup an hour and a half
+earlier (786k), on another pair of instances: comparisons hold within a
+session, where the cases alternate, not across sessions.
+
 ### Not explained yet
 
 - **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a
