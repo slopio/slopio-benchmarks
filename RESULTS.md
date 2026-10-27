@@ -89,6 +89,23 @@ though it reads and writes with plain syscalls on epoll. Where, a profile of
 the two side by side is to say. Locally, on loopback, h2o led by 9 to 42 %
 (`results/20261027-044214-single-local-vm`).
 
+### Built for the instance's CPU
+
+`infra/build-native.sh` builds the servers on the instance with
+`-C target-cpu=native` and `-mcpu=native` (Graviton4), offline from vendored
+sources. Atomics in the code built so become instructions rather than calls;
+Rust's prebuilt standard library and mimalloc's C keep theirs. Same pair of
+instances, the four alternating (`results/20261027-050253-single-aws`):
+
+| conns × streams | slopio | slopio native | h2o   | h2o native |
+|-----------------|--------|---------------|-------|------------|
+| 1 × 1           | 24.1k  | 24.0k         | 24.7k | 23.4k      |
+| 16 × 16         | 627k   | 644k (+2.6 %) | 1.07M | 1.06M      |
+| 64 × 32         | 631k   | 633k          | 1.20M | 1.19M      |
+
+A few percent for slopio, nothing for h2o: the gap is not in how slopio is
+compiled.
+
 ## Many connections, on AWS
 
 `bench/bench.sh conns`: N connections, each sending one request at a time.
