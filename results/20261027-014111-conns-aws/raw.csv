@@ -1,0 +1,2 @@
+server,conns,rate,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,connect_mean_us,connect_max_us,established,server_cores,server_user_pct,server_sys_pct,idle_mib,rss_mib,peak_mib,tcp_idle_mib,tcp_mib,client_busy_pct,nic_exceeded,nic_detail,machine_cores,machine_irq_cores
+slopio,50000,max,1,785692.20,7856922,0,0,63660,68040,876,0,0,50000,7.89,38,62,262.4,725.8,725.8,5.0,193.0,36,0,,8.01,1.54

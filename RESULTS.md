@@ -209,6 +209,28 @@ the whole machine, it serves ~1.4× hyper's requests per CPU busy at 50,000
 connections: 92k with irqbalance (944k req/s on 10.2 CPUs), 95k with the
 interrupts on 8-15 (1.07M on 11.3).
 
+### slopio steered: SO_INCOMING_CPU in the runtime
+
+The runtime's `incoming-cpu` branch (`1ff8b85`, in `~/runtime`, not yet
+published) sets `SO_INCOMING_CPU` on each worker's listener to the CPU the
+worker is pinned to, on by default (`Topology::steer_connections`).
+slopio-server's `STEER=0` turns it off. Same machine, the NIC's queue n and
+its XPS on CPU n (0-7), 50,000 connections as fast as they can go, the two
+alternating (`results/20261027-013958-conns-aws` to
+`20261027-014258-conns-aws`, built against that branch):
+
+| slopio              | runs              | median    | machine CPUs busy | of it in interrupts |
+|---------------------|-------------------|-----------|-------------------|---------------------|
+| steered (`STEER=1`) | 777k, 786k, 794k  | **786k**  | 8.01              | **1.54**            |
+| hash (`STEER=0`)    | 743k, 743k, 732k  | 743k      | 8.01              | 1.84                |
+
++5.7 %, every steered run above every unsteered one, and a sixth less time
+in interrupts, on the same 8 CPUs with nothing spilling onto others. Per CPU
+busy, network included, it is the most efficient placement measured: 98k
+req/s, against 95k with the interrupts kept on other CPUs (1.07M on 11.3)
+and 92k with irqbalance (944k on 10.2), those from other sessions. Steered
+the same way on the same 8 CPUs, hyper did 603k: slopio 1.30×.
+
 ### Not explained yet
 
 - **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a
