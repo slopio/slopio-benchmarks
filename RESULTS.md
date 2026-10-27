@@ -68,6 +68,27 @@ of its 8 cores. `results/20261026-210343-multi-aws` keeps that run, marked
 One core at 16 × 16, several at 64 × 32. Both scale near linearly from 1 to
 8 cores; the ratio stays at about 2.2×.
 
+## Against h2o, one core, on AWS
+
+`h2o-server` is libh2o, h2o's own library in C (`servers/h2o`, built from
+h2o `8c95f06` with its release flags), set up as the other two; its
+responses match slopio's byte for byte. Server on a `c8gn.medium`, h2load on
+a `c8gn.xlarge` with 4 threads, the two alternating
+(`results/20261027-044812-single-aws`):
+
+| conns × streams | slopio    | h2o           | h2o / slopio | mean latency slopio / h2o |
+|-----------------|-----------|---------------|--------------|---------------------------|
+| 1 × 1           | 25.4k     | 26.0k         | 1.0×         | 37 µs / 36 µs             |
+| 16 × 16         | 613k      | **1.08M**     | **1.77×**    | 402 µs / 216 µs           |
+| 64 × 32         | 645k      | **1.19M**     | **1.85×**    | 3.08 ms / 1.67 ms         |
+
+Both servers at 0.95 of their core, h2load at most 57 % of its own. At
+16 × 16, a request costs slopio 0.96 µs of user time and 0.59 µs of kernel
+time, h2o 0.45 and 0.43: h2o is cheaper in both, the kernel included,
+though it reads and writes with plain syscalls on epoll. Where, a profile of
+the two side by side is to say. Locally, on loopback, h2o led by 9 to 42 %
+(`results/20261027-044214-single-local-vm`).
+
 ## Many connections, on AWS
 
 `bench/bench.sh conns`: N connections, each sending one request at a time.
