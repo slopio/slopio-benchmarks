@@ -15,11 +15,13 @@
 #   agent.sh pin-irqs <cpus>      stops irqbalance and puts NIC queue n's
 #                                 interrupt, and XPS, on the nth of those CPUs
 #   agent.sh perf-setup           installs perf and lets it see the kernel
+#   agent.sh napi-irqs <n> <ns>   the NIC's napi_defer_hard_irqs and
+#                                 gro_flush_timeout, which prefer_busy_poll needs
 #   agent.sh info                 the machine, for env.txt
 
 set -euo pipefail
 
-cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|pin-irqs|perf-setup|info}
+cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|pin-irqs|perf-setup|napi-irqs|info}
 shift
 
 case $cmd in
@@ -94,6 +96,11 @@ case $cmd in
                 [[ -e $xps ]] && printf '%x' $((1 << cpu)) | sudo -n tee "$xps" > /dev/null
             done
         ;;
+    napi-irqs)
+        iface=$(ip route show default | awk '{ print $5; exit }')
+        echo "$1" | sudo -n tee "/sys/class/net/$iface/napi_defer_hard_irqs" > /dev/null
+        echo "$2" | sudo -n tee "/sys/class/net/$iface/gro_flush_timeout" > /dev/null
+        ;;
     perf-setup)
         if ! perf --version > /dev/null 2>&1; then
             sudo -n DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=300 install -y -q \
@@ -120,7 +127,9 @@ case $cmd in
         irqs=$(awk -F: -v i="$iface" '$0 ~ i { gsub(/ /, "", $1); print $1 }' /proc/interrupts)
         echo "  nic $iface: $(echo $irqs | wc -w) queue interrupts on CPUs" \
             "$(for irq in $irqs; do cat /proc/irq/$irq/smp_affinity_list; done | paste -sd' ')," \
-            "irqbalance $(systemctl is-active irqbalance 2> /dev/null || true)"
+            "irqbalance $(systemctl is-active irqbalance 2> /dev/null || true)," \
+            "napi_defer_hard_irqs $(cat /sys/class/net/$iface/napi_defer_hard_irqs 2> /dev/null)," \
+            "gro_flush_timeout $(cat /sys/class/net/$iface/gro_flush_timeout 2> /dev/null)"
         echo "  open files: $(ulimit -Hn) hard"
         for key in net.ipv4.ip_local_port_range net.core.somaxconn net.ipv4.tcp_max_syn_backlog \
             net.ipv4.tcp_tw_reuse net.ipv4.tcp_syncookies; do

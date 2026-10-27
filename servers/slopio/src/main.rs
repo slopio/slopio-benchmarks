@@ -15,12 +15,15 @@
 //! | `MAX_STREAMS`   | library      | SETTINGS_MAX_CONCURRENT_STREAMS.                |
 //! | `STREAM_WINDOW` | library      | SETTINGS_INITIAL_WINDOW_SIZE, in bytes.         |
 //! | `BODY_MIN_RATE` | library      | Slowest upload tolerated, bytes/s; 0 disables.  |
+//! | `STEER`         | `1`          | With `PER_CORE`, `SO_INCOMING_CPU` on each worker's listener; `0` leaves connections to the kernel's hash. |
+//! | `NAPI_BUSY_POLL_US` | `0`      | With `PER_CORE`, NAPI busy polling on each worker's ring for up to this many µs; `0` leaves it off. |
+//! | `NAPI_PREFER`   | unset        | With `NAPI_BUSY_POLL_US`, `prefer_busy_poll`: the kernel defers the queue's interrupts while a worker polls it. |
 //!
 //! The HTTP route is in `routes.rs`. The gRPC methods, in `grpc.rs`,
 //! are only built with `--features grpc`.
 
 use runtime::net::BufRingSpec;
-use runtime::{main_thread_with, thread_per_core_with};
+use runtime::{RingOptions, Topology, main_thread_with};
 use slopio_h2::server::{Limits, Server, ServerSettings, ServerTransport};
 
 #[cfg(feature = "grpc")]
@@ -47,7 +50,12 @@ runtime::define_buf_ring!(Ring64x512, bgid = 1, buffer_size = 65536, ring_size =
 runtime::define_buf_ring!(Ring64x4096, bgid = 1, buffer_size = 65536, ring_size = 4096);
 runtime::define_buf_ring!(Ring16x2048, bgid = 1, buffer_size = 16384, ring_size = 2048);
 runtime::define_buf_ring!(Ring16x4096, bgid = 1, buffer_size = 16384, ring_size = 4096);
-runtime::define_buf_ring!(Ring16x16384, bgid = 1, buffer_size = 16384, ring_size = 16384);
+runtime::define_buf_ring!(
+    Ring16x16384,
+    bgid = 1,
+    buffer_size = 16384,
+    ring_size = 16384
+);
 // Many small buffers, for many connections each receiving little at a time:
 // a receive holds a whole buffer, however few bytes it carries.
 runtime::define_buf_ring!(Ring4x8192, bgid = 1, buffer_size = 4096, ring_size = 8192);
@@ -103,7 +111,18 @@ fn main() {
 
 fn start<U: BufRingSpec + 'static>(config: Config, per_core: bool) {
     if per_core {
-        thread_per_core_with::<U, _>(move |_| Box::pin(serve::<U>(config)));
+        // `thread_per_core_with`, with its steering of connections to the
+        // CPU that receives them switchable.
+        let mut topology = Topology::new();
+        topology.steer_connections(env("STEER", 1u8) != 0);
+        let napi_us: u64 = env("NAPI_BUSY_POLL_US", 0);
+        let ring = RingOptions {
+            napi_busy_poll: (napi_us > 0).then(|| std::time::Duration::from_micros(napi_us)),
+            napi_prefer_busy_poll: napi_us > 0 && flag("NAPI_PREFER"),
+            ..RingOptions::default()
+        };
+        topology.per_core::<U, _, _>(ring, move |_| serve::<U>(config));
+        topology.run();
     } else {
         main_thread_with::<U, _>(serve::<U>(config));
     }
