@@ -1,0 +1,4 @@
+    48.50%  [kernel.kallsyms]
+    44.10%  hyper-server     
+     5.06%  [ena]            
+     2.07%  libc.so.6        

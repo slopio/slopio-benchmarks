@@ -132,6 +132,55 @@ connection, arriving spread out, few are in use at once. Where the 8.9 µs
 per request go at 50,000 connections, against 1.6 at 64, is for a profile
 to say.
 
+### Where the time goes at 50,000 connections, and the NIC's interrupts
+
+Same load, slopio and hyper `reuseport` on 8 of the 32 CPUs of a
+`c8gn.8xlarge`, h2load on another. The NIC has 8 queues; where their
+interrupts are handled changes the results:
+
+| NIC interrupts                                   | slopio     | hyper reuseport | ratio |
+|--------------------------------------------------|------------|-----------------|-------|
+| spread by irqbalance (CPUs 5, 7, 9, 11, 16, 18, 21, 26) | 896k req/s | 596k     | 1.50× |
+| on the workers' CPUs, one queue each (0-7)       | 644k (−28 %) | 493k (−17 %)  | 1.31× |
+| away from the workers, one queue each (8-15)     | **1.00M (+12 %)** | 631k (+6 %) | 1.59× |
+
+`results/20261027-003018-conns-aws`, `-003355-`, `-003731-`. irqbalance
+had put two queues on worker CPUs (5 and 7), and those two workers shared
+their core with the network's interrupts; every run before this one ran
+so. Kept off the workers, the interrupts let slopio pass 1M req/s. The
+server's own CPU time stays at 7.85 cores whatever the placement: time
+spent in interrupts is not the process's, it is taken from it.
+
+perf on the server, interrupts spread by irqbalance
+(`results/20261027-003240-conns-aws/raw/*.perf-*.txt`; perf costs ~6 %):
+
+| share of the server's samples              | slopio | hyper reuseport |
+|--------------------------------------------|--------|-----------------|
+| kernel                                     | 56 %   | 42 %            |
+| NIC driver (ena)                           | 4 %    | 4 %             |
+| the server's own code                      | 37 %   | 52 %            |
+| of which out-of-line atomics (`__aarch64_*`) | 5 %  | 17 %            |
+| AppArmor's checks on every send and receive | 7 %   | 5 %             |
+| file descriptor lookup (`fget`, `sock_from_file`) | 5 % | 3 %         |
+| socket locks                               | 5 %    | 5 %             |
+
+What it says, to be followed up:
+
+- **Atomics are calls.** Built for generic aarch64, Rust reaches every
+  atomic through an `__aarch64_*` function that picks LSE instructions at
+  run time. They take 17 % of hyper's time and 5 % of slopio's. Building
+  both for the CPU they run on (`-C target-cpu=neoverse-v2`, or
+  `+lse`) would inline them; hyper would gain more. And slopio, one thread
+  per core, should hardly need atomics on this path: which ones it takes
+  is worth finding.
+- **The kernel looks up the socket's file on every operation.** io_uring's
+  registered (fixed) files would spare slopio `fget`, ~5 % of its time.
+- **AppArmor** checks every socket send and receive on Ubuntu: 7 % of
+  slopio's time, 5 % of hyper's. A cost of the platform, the same for
+  both, left on.
+- slopio's largest single function is `SharedConnection::write_response`,
+  5 %: encoding each response's head.
+
 ### Not explained yet
 
 - **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a
