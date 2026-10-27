@@ -46,6 +46,9 @@
 #   PORT         default 18080.
 #   SERVER_ENV   more VAR=value for every server, e.g. RING=4x16384 for
 #                slopio's receive buffers; recorded in env.txt.
+#   PROFILE      set, for conns: perf records the server through each measured
+#                run, and raw/ gets where its time went, by object and by
+#                function. Costs the server some of its throughput.
 #   SKIP_BUILD   set to use the binaries already in target/release.
 
 set -euo pipefail
@@ -207,6 +210,11 @@ else
         "$root/target/release/hyper-server" "ubuntu@$SERVER_IP:$bin_dir/"
 fi
 
+if [[ -n ${PROFILE:-} ]] && ! on_server "$agent perf-setup" > /dev/null; then
+    echo "perf could not be set up on the server" >&2
+    exit 1
+fi
+
 if ! on_server "$agent free $port"; then
     echo "port $port is already in use on the server" >&2
     exit 1
@@ -366,9 +374,17 @@ run_conns() {
     before=$(on_server "$agent sample $pid") || true
     on_client "mpstat -P $client_cpus $((duration > 2 ? duration - 1 : 1)) 1" > "$out/raw/$tag.mpstat.txt" &
     local mp=$!
+    # perf's own cost lowers what it measures: a profiled run's figures are
+    # not to be set beside an unprofiled one's.
+    local prof=
+    if [[ -n ${PROFILE:-} ]]; then
+        on_server "perf record -q -F 999 -g -p $pid -o $log_dir/$tag.perf.data -- sleep $((duration - 2)) > /dev/null 2>&1" &
+        prof=$!
+    fi
     sleep $((duration / 2))
     during=$(on_server "$agent mem $pid $port") || true
     wait $load || true
+    [[ -n $prof ]] && { wait "$prof" || true; }
     after=$(on_server "$agent sample $pid") || true
     nic_after=$(on_server "$agent nic") || true
     peak=$(on_server "$agent mem $pid $port") || true
@@ -386,6 +402,14 @@ run_conns() {
     fi
     on_server "$agent stop $pid"
     on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
+
+    # Where the time went: by object (the kernel, the server, libc), then by
+    # function, each by the samples taken in it rather than below it.
+    if [[ -n ${PROFILE:-} ]]; then
+        local report="perf report -i $log_dir/$tag.perf.data --no-children -g none --stdio --percent-limit 0.5"
+        on_server "$report --sort dso 2> /dev/null | grep -v -e '^#' -e '^$'" > "$out/raw/$tag.perf-dso.txt" || true
+        on_server "$report --sort dso,sym 2> /dev/null | grep -v -e '^#' -e '^$' | head -60" > "$out/raw/$tag.perf-sym.txt" || true
+    fi
 
     if ! grep -q "^finished in" "$out/raw/$tag.h2load.txt"; then
         echo "$tag: h2load printed no figures (killed after hanging); run left out" | tee -a "$out/events.txt" >&2

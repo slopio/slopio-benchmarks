@@ -12,11 +12,14 @@
 #                                 process's memory, the kernel's for all TCP
 #                                 sockets, the connections open on the port
 #   agent.sh nic                  the NIC's allowance counters, name=value
+#   agent.sh pin-irqs <cpus>      stops irqbalance and moves the NIC's queue
+#                                 interrupts onto those CPUs
+#   agent.sh perf-setup           installs perf and lets it see the kernel
 #   agent.sh info                 the machine, for env.txt
 
 set -euo pipefail
 
-cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|info}
+cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|pin-irqs|perf-setup|info}
 shift
 
 case $cmd in
@@ -71,6 +74,22 @@ case $cmd in
             awk -F: '/allowance_exceeded/ { gsub(/ /, ""); printf "%s=%s ", $1, $2 }'
         echo
         ;;
+    pin-irqs)
+        # The ENA names its queue interrupts after the interface.
+        iface=$(ip route show default | awk '{ print $5; exit }')
+        sudo -n systemctl stop irqbalance 2> /dev/null || true
+        for irq in $(awk -F: -v i="$iface" '$0 ~ i { gsub(/ /, "", $1); print $1 }' /proc/interrupts); do
+            echo "$1" | sudo -n tee "/proc/irq/$irq/smp_affinity_list" > /dev/null
+        done
+        ;;
+    perf-setup)
+        if ! perf --version > /dev/null 2>&1; then
+            sudo -n DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=300 install -y -q \
+                linux-tools-common "linux-tools-$(uname -r)" > /dev/null
+        fi
+        sudo -n sysctl -q kernel.perf_event_paranoid=-1 kernel.kptr_restrict=0
+        perf --version
+        ;;
     info)
         imds() {
             local token
@@ -85,6 +104,11 @@ case $cmd in
         echo "  cpus: $(nproc --all), $(lscpu | awk -F: '/^Model name/ { gsub(/^ +/, "", $2); print $2 }')"
         echo "  io_uring_disabled: $(cat /proc/sys/kernel/io_uring_disabled 2> /dev/null || echo n/a)"
         echo "  page size: $(getconf PAGESIZE)"
+        iface=$(ip route show default | awk '{ print $5; exit }')
+        irqs=$(awk -F: -v i="$iface" '$0 ~ i { gsub(/ /, "", $1); print $1 }' /proc/interrupts)
+        echo "  nic $iface: $(echo $irqs | wc -w) queue interrupts on CPUs" \
+            "$(for irq in $irqs; do cat /proc/irq/$irq/smp_affinity_list; done | sort -u | paste -sd' ')," \
+            "irqbalance $(systemctl is-active irqbalance 2> /dev/null || true)"
         echo "  open files: $(ulimit -Hn) hard"
         for key in net.ipv4.ip_local_port_range net.core.somaxconn net.ipv4.tcp_max_syn_backlog \
             net.ipv4.tcp_tw_reuse net.ipv4.tcp_syncookies; do
