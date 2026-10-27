@@ -181,6 +181,34 @@ What it says, to be followed up:
 - slopio's largest single function is `SharedConnection::write_response`,
   5 %: encoding each response's head.
 
+### Steering connections to the CPU their packets arrive on
+
+The NIC hashes each connection to one of its 8 queues, and `SO_REUSEPORT`
+hashes it to a worker; the two hashes are unrelated, so a connection's
+packets are handled by the kernel on one core and read by its worker on
+another. hyper-server's `INCOMING_CPU=1` sets `SO_INCOMING_CPU` on each
+worker's listener, and the kernel then hands a connection to the listener of
+the CPU that received it. Same load as above, 8 worker CPUs, now with the
+whole server machine's CPU measured, interrupts and softirqs included
+(`results/20261027-011933-conns-aws` to `20261027-012432-conns-aws`):
+
+| hyper reuseport                       | on their worker's CPU | req/s | machine CPUs busy (interrupts) | req/s per busy CPU |
+|---------------------------------------|-----------------------|-------|--------------------------------|--------------------|
+| irqbalance                            | 3 %                   | 625k  | 9.29 (1.72)                    | 67k                |
+| queue n on CPU n, 0-7, no steering    | 12 %                  | 559k  | 8.01 (1.56)                    | 70k                |
+| **queue n on CPU n, `SO_INCOMING_CPU`** | **100 %**           | 603k  | **8.01 (1.25)**                | **75k**            |
+| queues on 8-15, away from the workers | 0 %                   | 659k  | 9.72 (1.71)                    | 68k                |
+
+Steered, every connection is served on the core its packets arrive on: 8 %
+more than unsteered on the same 8 CPUs, a quarter less time in interrupts,
+and the most requests per CPU busy. Interrupts kept off the workers give
+the most requests, by spending 1.7 more CPUs on them.
+
+slopio, its listeners made by the runtime, cannot be steered yet. Counting
+the whole machine, it serves ~1.4× hyper's requests per CPU busy at 50,000
+connections: 92k with irqbalance (944k req/s on 10.2 CPUs), 95k with the
+interrupts on 8-15 (1.07M on 11.3).
+
 ### Not explained yet
 
 - **Stalls of ~18 s in slopio.** At 50,000 connections × 1 request a

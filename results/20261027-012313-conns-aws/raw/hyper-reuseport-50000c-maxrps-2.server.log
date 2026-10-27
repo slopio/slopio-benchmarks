@@ -1,0 +1,9 @@
+hyper-server on :18080 (h2c), mode=Reuseport, threads=8, max_streams=64, stream_window=1048576, incoming_cpu=true
+worker on CPU 4: 6301 accepted, 6301 arrived on this CPU
+worker on CPU 0: 6230 accepted, 6230 arrived on this CPU
+worker on CPU 5: 6254 accepted, 6254 arrived on this CPU
+worker on CPU 6: 6223 accepted, 6223 arrived on this CPU
+worker on CPU 2: 6261 accepted, 6261 arrived on this CPU
+worker on CPU 1: 6249 accepted, 6249 arrived on this CPU
+worker on CPU 7: 6257 accepted, 6257 arrived on this CPU
+worker on CPU 3: 6225 accepted, 6225 arrived on this CPU

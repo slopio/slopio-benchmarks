@@ -1,0 +1,5 @@
+server,conns,rate,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,connect_mean_us,connect_max_us,established,server_cores,server_user_pct,server_sys_pct,idle_mib,rss_mib,peak_mib,tcp_idle_mib,tcp_mib,client_busy_pct,nic_exceeded,nic_detail,machine_cores,machine_irq_cores
+slopio,50000,max,1,1062998.00,10629980,0,0,46790,60350,1180,0,0,50000,7.87,48,52,262.4,763.8,763.9,6.9,193.9,47,0,,11.33,3.32
+hyper-reuseport,50000,max,1,658824.00,6588240,0,0,76160,82030,2250,0,0,50000,7.86,57,43,3.3,1302.2,1302.2,6.9,65.9,31,0,,9.75,1.73
+slopio,50000,max,2,1067931.20,10679312,0,0,46600,62030,861,0,0,50000,7.83,48,52,262.4,746.7,746.8,12.9,190.9,47,0,,11.17,3.15
+hyper-reuseport,50000,max,2,659238.70,6592387,0,0,76240,83160,2110,0,0,50000,7.88,57,43,3.3,1299.8,1301.0,7.9,70.9,30,0,,9.70,1.69
