@@ -15,13 +15,17 @@
 #   agent.sh pin-irqs <cpus>      stops irqbalance and puts NIC queue n's
 #                                 interrupt, and XPS, on the nth of those CPUs
 #   agent.sh perf-setup           installs perf and lets it see the kernel
+#   agent.sh count <pid> <s> <out>  perf stat on the process for s seconds:
+#                                 cycles and instructions, syscalls, io_uring
+#                                 submissions and completions
+#   agent.sh segs                 "in out now_s": the machine's TCP segments
 #   agent.sh napi-irqs <n> <ns>   the NIC's napi_defer_hard_irqs and
 #                                 gro_flush_timeout, which prefer_busy_poll needs
 #   agent.sh info                 the machine, for env.txt
 
 set -euo pipefail
 
-cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|pin-irqs|perf-setup|napi-irqs|info}
+cmd=${1:?usage: agent.sh start|listening|free|sample|alive|stop|mem|nic|pin-irqs|perf-setup|count|segs|napi-irqs|info}
 shift
 
 case $cmd in
@@ -108,6 +112,41 @@ case $cmd in
         fi
         sudo -n sysctl -q kernel.perf_event_paranoid=-1 kernel.kptr_restrict=0
         perf --version
+        ;;
+    count)
+        # The CPU's own counters where the machine exposes them (none in a VM
+        # without a PMU: perf says <not supported>), user and kernel apart,
+        # then what the process asked of the kernel: every syscall, the ones
+        # that read, write or wait, and io_uring's submissions and
+        # completions. Tracepoints need tracefs: through sudo, or else
+        # perf_event_paranoid -1 and a tracefs others may read. Those that
+        # this kernel lacks (epoll_wait on arm64) are left out, or perf
+        # would refuse them all.
+        pid=$1 secs=$2 out=$3
+        sudo=
+        sudo -n true 2> /dev/null && sudo="sudo -n"
+        events=cycles:u,instructions:u,cycles:k,instructions:k,branch-misses:u,L1-icache-load-misses:u,context-switches
+        for tp in raw_syscalls:sys_enter syscalls:sys_enter_io_uring_enter \
+            io_uring:io_uring_submit_req io_uring:io_uring_complete \
+            syscalls:sys_enter_read syscalls:sys_enter_readv syscalls:sys_enter_recvfrom syscalls:sys_enter_recvmsg \
+            syscalls:sys_enter_write syscalls:sys_enter_writev syscalls:sys_enter_sendto syscalls:sys_enter_sendmsg \
+            syscalls:sys_enter_epoll_wait syscalls:sys_enter_epoll_pwait syscalls:sys_enter_epoll_pwait2; do
+            $sudo test -d "/sys/kernel/tracing/events/${tp/://}" && events+=,$tp
+        done
+        # And, as a second io_uring_submit_req, only the zero-copy sends
+        # (IORING_OP_SENDMSG_ZC, opcode 48): whether SEND_ZC is used at all.
+        zc=()
+        $sudo test -d /sys/kernel/tracing/events/io_uring/io_uring_submit_req &&
+            zc=(-e io_uring:io_uring_submit_req --filter 'opcode == 48')
+        $sudo perf stat -x, -o "$out" -e "$events" "${zc[@]}" -p "$pid" -- sleep "$secs" > /dev/null 2>&1
+        [[ -n $sudo ]] && $sudo chown "$(id -u)" "$out"
+        ;;
+    segs)
+        # Every TCP segment the machine received and sent. On loopback both
+        # ends are this machine: each segment is counted once in and once
+        # out, whichever end sent it.
+        awk '/^Tcp:/ { if (!h) { for (i = 1; i <= NF; i++) col[$i] = i; h = 1 } else printf "%s %s ", $col["InSegs"], $col["OutSegs"] }' /proc/net/snmp
+        date +%s.%N
         ;;
     info)
         imds() {

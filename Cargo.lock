@@ -9,9 +9,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
+name = "app-work"
+version = "0.1.0"
+
+[[package]]
 name = "async_timers"
 version = "0.1.0"
-source = "git+ssh://git@github.com/saucisoupe/runtime.git#f2c6e71e7558a28eb4556e2c7fd5f3331ee46742"
+source = "git+ssh://git@github.com/saucisoupe/runtime.git#31b091ad68d29ed80274fcc71c849ab9f500cf4f"
 
 [[package]]
 name = "atomic-waker"
@@ -176,6 +180,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-body-util"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23169fe34a5fbcdd3f3862e78fb9b6fccd5f02a6dc6f732547005d45631ce71c"
+dependencies = [
+ "bytes",
+ "futures-core",
+ "http",
+ "http-body",
+ "pin-project-lite",
+]
+
+[[package]]
 name = "httpdate"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -204,9 +221,11 @@ dependencies = [
 name = "hyper-server"
 version = "0.1.0"
 dependencies = [
+ "app-work",
  "bytes",
  "http",
  "http-body",
+ "http-body-util",
  "hyper",
  "hyper-util",
  "libc",
@@ -253,7 +272,7 @@ dependencies = [
 [[package]]
 name = "io_uring_rb"
 version = "0.1.0"
-source = "git+ssh://git@github.com/saucisoupe/runtime.git#f2c6e71e7558a28eb4556e2c7fd5f3331ee46742"
+source = "git+ssh://git@github.com/saucisoupe/runtime.git#31b091ad68d29ed80274fcc71c849ab9f500cf4f"
 dependencies = [
  "io-uring",
  "rustix",
@@ -448,17 +467,17 @@ dependencies = [
 [[package]]
 name = "runtime"
 version = "0.1.0"
-source = "git+ssh://git@github.com/saucisoupe/runtime.git#f2c6e71e7558a28eb4556e2c7fd5f3331ee46742"
+source = "git+ssh://git@github.com/saucisoupe/runtime.git#31b091ad68d29ed80274fcc71c849ab9f500cf4f"
 dependencies = [
  "libc",
- "mimalloc",
+ "libmimalloc-sys",
  "runtime-core",
 ]
 
 [[package]]
 name = "runtime-core"
 version = "0.1.0"
-source = "git+ssh://git@github.com/saucisoupe/runtime.git#f2c6e71e7558a28eb4556e2c7fd5f3331ee46742"
+source = "git+ssh://git@github.com/saucisoupe/runtime.git#31b091ad68d29ed80274fcc71c849ab9f500cf4f"
 dependencies = [
  "async_timers",
  "bitfield-struct",
@@ -475,9 +494,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "runtime-http"
+version = "0.1.0"
+source = "git+ssh://git@github.com/saucisoupe/runtime.git#31b091ad68d29ed80274fcc71c849ab9f500cf4f"
+dependencies = [
+ "runtime-core",
+]
+
+[[package]]
 name = "runtime-streams"
 version = "0.1.0"
-source = "git+ssh://git@github.com/saucisoupe/runtime.git#f2c6e71e7558a28eb4556e2c7fd5f3331ee46742"
+source = "git+ssh://git@github.com/saucisoupe/runtime.git#31b091ad68d29ed80274fcc71c849ab9f500cf4f"
 
 [[package]]
 name = "rustc-hash"
@@ -487,9 +514,9 @@ checksum = "6b1e7f9a428571be2dc5bc0505c13fb6bf936822b894ec87abf8a08a4e51742d"
 
 [[package]]
 name = "rustix"
-version = "1.1.5"
+version = "1.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d"
+checksum = "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa"
 dependencies = [
  "bitflags",
  "errno",
@@ -513,28 +540,38 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 [[package]]
 name = "slopio-h2"
 version = "0.1.0"
-source = "git+ssh://git@github.com/slopio/slopio-h2.git#76e1f562f3b1be40ee438306c36d260197934cc1"
+source = "git+ssh://git@github.com/slopio/slopio-h2.git#d6275650809b9a1abe96ee10def74388e24aea5f"
 dependencies = [
- "bytes",
  "fnv",
- "http",
  "matchit",
  "popple-dns",
  "prost",
  "runtime",
+ "runtime-http",
  "runtime-streams",
  "rustc-hash",
  "zerocopy",
 ]
 
 [[package]]
+name = "slopio-load"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "runtime",
+ "runtime-http",
+ "slopio-h2",
+]
+
+[[package]]
 name = "slopio-server"
 version = "0.1.0"
 dependencies = [
+ "app-work",
  "bytes",
- "http",
  "prost",
  "runtime",
+ "runtime-http",
  "slopio-h2",
 ]
 

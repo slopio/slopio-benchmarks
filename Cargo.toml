@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["servers/slopio", "servers/hyper"]
+members = ["servers/slopio", "servers/hyper", "servers/work", "bench/loadgen"]
 
 # One profile for every Rust server, so that none is built better than another.
 [profile.release]

@@ -4,9 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+app-work = { path = "../work" }
 bytes = "1"
 http = "1"
 http-body = "1"
+http-body-util = "0.1"
 hyper = { version = "1", features = ["http2", "server"] }
 hyper-util = { version = "0.1", features = ["tokio"] }
 libc = "0.2"

@@ -62,6 +62,62 @@ def main(path):
         " the instance's allowance; their req/s measured AWS's limit."
     )
 
+    # /app with a delay: how long each server's waits really took, and how
+    # far each was from what it asked.
+    slept = {k: [r for r in rows if r.get("slept_n")] for k, rows in runs.items()}
+    if any(slept.values()):
+        # Runs from before the servers counted each sleep's error have none.
+        errors = all(r.get("slept_early_pct") for rows in slept.values() for r in rows)
+        columns = [("asked", "asked"), ("mean", "slept")]
+        if errors:
+            columns += [("err_mean", "err mean"), ("err_p1", "err p1"), ("err_p50", "err p50"), ("err_p99", "err p99")]
+        else:
+            columns += [("p1", "p1"), ("p50", "p50"), ("p99", "p99")]
+        columns += [("max", "max")]
+        print()
+        header = (
+            f"{'conns x streams':>15}  {'server':<16}"
+            + "".join(f" {title:>9}" for _, title in columns)
+            + (f" {'early':>6}" if errors else "")
+            + f"  {'lat - slept':>11}"
+        )
+        print(header)
+        print("-" * len(header))
+        previous = None
+        for conns, streams, server in sorted(order, key=lambda k: (k[0], k[1])):
+            rows = slept[(conns, streams, server)]
+            if not rows:
+                continue
+            if previous is not None and previous != (conns, streams):
+                print()
+            previous = (conns, streams)
+            print(
+                f"{f'{conns} x {streams}':>15}  {server:<16}"
+                + "".join(f" {f'{median(rows, f'slept_{c}_ms'):.2f}ms':>9}" for c, _ in columns)
+                + (f" {f'{median(rows, 'slept_early_pct'):.1f}%':>6}" if errors else "")
+                + f"  {duration(median(rows, 'lat_mean_us') - 1000 * median(rows, 'slept_mean_ms')):>11}"
+            )
+        print()
+        print(
+            "How long each server's waits on /app really took, on its own clock,"
+            " over the measured run: asked and slept on average, and at most."
+            + (
+                " err: how far each sleep was from what it asked, slept minus"
+                " asked, negative when it ended early: on average, and at the"
+                " 1st, 50th and 99th percentiles (to 100 µs); early: the share"
+                " of sleeps that ended before their time."
+                if errors
+                else " p1, p50, p99: the 1st, 50th and 99th percentiles of the"
+                " time slept (to 100 µs)."
+            )
+            + " Medians of the runs. Each sleeps on its own runtime's timer:"
+            " slopio's ticks every 10 ms, tokio's and h2o's every millisecond."
+            " h2load keeps as many requests in flight as it has streams, so a"
+            " server that sleeps less answers more per second for it: lat -"
+            " slept, the mean latency less the mean sleep, is what the server"
+            " itself took."
+        )
+
 
 def summarize_conns(path):
     """A conns run: the same load for every server, so what each spent on it."""

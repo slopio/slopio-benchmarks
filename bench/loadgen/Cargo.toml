@@ -1,0 +1,10 @@
+[package]
+name = "slopio-load"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+http = { git = "ssh://git@github.com/saucisoupe/runtime.git", package = "runtime-http" }
+libc = "0.2"
+runtime = { git = "ssh://git@github.com/saucisoupe/runtime.git" }
+slopio-h2 = { git = "ssh://git@github.com/slopio/slopio-h2.git", default-features = false }

@@ -44,6 +44,10 @@
 #                for all the connections to be made first.
 #   REPS         repetitions, default 3.
 #   PORT         default 18080.
+#   URL_PATH     what h2load asks for, default /. With
+#                /app?delay_ms=..., summary.txt also gets how long each
+#                server's waits really took: each sleeps on its own runtime's
+#                timer, and slopio's ticks every 10 ms (see servers/work).
 #   SERVER_ENV   more VAR=value for every server, e.g. RING=4x16384 for
 #                slopio's receive buffers; recorded in env.txt.
 #   PROFILE      set, for conns: perf records the server through each measured
@@ -52,6 +56,15 @@
 #                costliest. The servers are built apart for it, in
 #                target/profiling, with frame pointers and line tables. Costs
 #                the server some of its throughput: not for comparing req/s.
+#   POST_BYTES   a body of this many bytes sent with
+#                every request: h2load then POSTs, to URL_PATH (set it to
+#                /app..., the route that reads one). Recorded in env.txt.
+#   COUNT        set, for single and multi: perf stat on the server through
+#                each measured run, and counts.txt gets what a request cost
+#                it: instructions and cycles, user and kernel apart, where the
+#                machine exposes them; syscalls, io_uring submissions and
+#                completions; TCP segments. Needs sudo on the server, or
+#                perf_event_paranoid -1 and a readable tracefs.
 #   SKIP_BUILD   set to use the binaries already in target/release.
 
 set -euo pipefail
@@ -178,9 +191,20 @@ reps=${REPS:-3}
 port=${PORT:-18080}
 
 # name -> binary and environment. A name ending in -native is the same
-# server built on the instance for its own CPU, by infra/build-native.sh.
+# server built on the instance for its own CPU, by infra/build-native.sh; one
+# ending in -prev, a build of an earlier version put in target/prev (cargo's
+# --target-dir), to run beside the current one; one ending in -zc, the same
+# slopio sending zero-copy (ZERO_COPY=1); one ending in -hash, slopio with its
+# connections left to the kernel's hash rather than steered to the CPU that
+# receives them (STEER=0).
+base_name() {
+    local name=${1%-zc}
+    name=${name%-hash}
+    name=${name%-native}
+    echo "${name%-prev}"
+}
 server_bin() {
-    case ${1%-native} in
+    case $(base_name "$1") in
         slopio) echo slopio-server ;;
         hyper | hyper-reuseport | hyper-multi) echo hyper-server ;;
         h2o) echo h2o-server ;;
@@ -188,8 +212,11 @@ server_bin() {
     esac
 }
 server_env() {
-    case ${1%-native} in
-        slopio | hyper | h2o) echo "$per_core" ;;
+    local zc=
+    [[ $1 == *-zc ]] && zc=ZERO_COPY=1
+    [[ $1 == *-hash ]] && zc=STEER=0
+    case $(base_name "$1") in
+        slopio | hyper | h2o) echo "$per_core $zc" ;;
         hyper-reuseport) echo "$per_core TOKIO_MODE=reuseport" ;;
         hyper-multi) echo "$per_core TOKIO_MODE=multi" ;;
     esac
@@ -218,14 +245,20 @@ if [[ -z ${SKIP_BUILD:-} ]]; then
 fi
 # A server's binary here, and its name on the server's machine.
 local_binary() {
-    if [[ $1 == *-native ]]; then
+    local name=${1%-zc}
+    name=${name%-hash}
+    if [[ $name == *-native ]]; then
         echo "$root/target/native/$(server_bin "$1")"
+    elif [[ $name == *-prev ]]; then
+        echo "$root/target/prev/release/$(server_bin "$1")"
     else
         binary "$(server_bin "$1")"
     fi
 }
 remote_name() {
-    echo "$(server_bin "$1")${1#"${1%-native}"}"
+    local name=${1%-zc}
+    name=${name%-hash}
+    echo "$(server_bin "$1")${name#"$(base_name "$1")"}"
 }
 # Where the server's machine has a server's binary.
 server_path() {
@@ -260,7 +293,7 @@ else
     done
 fi
 
-if [[ -n ${PROFILE:-} ]] && ! on_server "$agent perf-setup" > /dev/null; then
+if [[ -n ${PROFILE:-} || (-n ${COUNT:-} && $where == aws) ]] && ! on_server "$agent perf-setup" > /dev/null; then
     echo "perf could not be set up on the server" >&2
     exit 1
 fi
@@ -268,6 +301,15 @@ fi
 if ! on_server "$agent free $port"; then
     echo "port $port is already in use on the server" >&2
     exit 1
+fi
+
+# The body h2load POSTs, made on the client's machine, by its absolute path:
+# h2load could not open it by a relative one.
+post=
+if [[ -n ${POST_BYTES:-} ]]; then
+    post_file=$(on_client "mkdir -p $remote_dir && cd $remote_dir && pwd")/post-$POST_BYTES.bin
+    on_client "head -c $POST_BYTES /dev/zero | tr '\\0' x > $post_file"
+    post="-d $post_file"
 fi
 
 out="$root/results/$(date +%Y%m%d-%H%M%S)-$mode-$where"
@@ -283,6 +325,8 @@ mkdir -p "$out/raw"
     echo "configs: $configs"
     echo "servers: $servers"
     echo "server environment: ${SERVER_ENV:-none}"
+    echo "url path: ${URL_PATH:-/}"
+    echo "post bytes: ${POST_BYTES:-none}"
     echo "duration: ${duration}s, warmup: ${warmup}s, reps: $reps"
     echo "server machine:"
     on_server "$agent info"
@@ -307,15 +351,16 @@ EOF
 if [[ $mode == conns ]]; then
     echo "server,conns,rate,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,connect_mean_us,connect_max_us,established,server_cores,server_user_pct,server_sys_pct,idle_mib,rss_mib,peak_mib,tcp_idle_mib,tcp_mib,client_busy_pct,nic_exceeded,nic_detail,machine_cores,machine_irq_cores" > "$out/raw.csv"
 else
-    echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail" > "$out/raw.csv"
+    echo "server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail,slept_n,slept_asked_ms,slept_mean_ms,slept_p1_ms,slept_p50_ms,slept_p99_ms,slept_max_ms,slept_err_mean_ms,slept_early_pct,slept_err_p1_ms,slept_err_p50_ms,slept_err_p99_ms" > "$out/raw.csv"
 fi
 
 run_one() {
     local name=$1 conns=$2 streams=$3 rep=$4
     local tag="$name-${conns}x$streams-$rep"
     local threads=$((conns < client_threads ? conns : client_threads))
-    local load="taskset -c $client_cpus h2load -t $threads -c $conns -m $streams"
-    local url="http://$target_ip:$port/"
+    local load="taskset -c $client_cpus h2load -t $threads -c $conns -m $streams $post"
+    # Quoted for the client's shell: a query's & would end the command.
+    local url="'http://$target_ip:$port${URL_PATH:-/}'"
 
     local pid
     pid=$(on_server "$agent start $server_cpus $(server_path "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
@@ -332,10 +377,23 @@ run_one() {
     before=$(on_server "$agent sample $pid")
     on_client "mpstat -P $client_cpus $((duration > 2 ? duration - 1 : 1)) 1" > "$out/raw/$tag.mpstat.txt" &
     local mp=$!
+    # Counted from 1 s in to 1 s before the end, all of it under load.
+    local count= segs_before segs_after
+    if [[ -n ${COUNT:-} ]]; then
+        segs_before=$(on_server "$agent segs")
+        on_server "sleep 1; $agent count $pid $((duration - 2)) $log_dir/$tag.stat" &
+        count=$!
+    fi
     on_client "$load -D $duration $url" > "$out/raw/$tag.h2load.txt" 2>&1 || true
     after=$(on_server "$agent sample $pid")
     nic_after=$(on_server "$agent nic")
     wait $mp || true
+    if [[ -n $count ]]; then
+        wait $count || true
+        segs_after=$(on_server "$agent segs")
+        on_server "cat $log_dir/$tag.stat" > "$out/raw/$tag.perf-stat.txt" || true
+        printf '%s\n%s\n' "$segs_before" "$segs_after" > "$out/raw/$tag.segs.txt"
+    fi
 
     if ! on_server "$agent alive $pid"; then
         on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
@@ -345,11 +403,16 @@ run_one() {
     on_server "$agent stop $pid"
     on_server "cat $log_dir/$tag.log" > "$out/raw/$tag.server.log" || true
 
+    # The server's waits on /app that ended within the measured run, by the
+    # server machine's clock, as before and after are.
+    local slept
+    slept=$(python3 -I "$root/bench/slept.py" "$out/raw/$tag.server.log" "${before##* }" "${after##* }")
+
     python3 -I - "$out/raw/$tag.h2load.txt" "$out/raw/$tag.mpstat.txt" \
         "$before" "$after" "$nic_before" "$nic_after" \
-        "$name" "$conns" "$streams" "$rep" >> "$out/raw.csv" << 'EOF'
+        "$name" "$conns" "$streams" "$rep" "$slept" >> "$out/raw.csv" << 'EOF'
 import re, sys
-h2load, mpstat, before, after, nic_before, nic_after, name, conns, streams, rep = sys.argv[1:]
+h2load, mpstat, before, after, nic_before, nic_after, name, conns, streams, rep, slept = sys.argv[1:]
 text = open(h2load).read()
 
 def us(v):
@@ -378,7 +441,8 @@ print(",".join([name, conns, streams, rep, rps, *req,
                 f"{us(lat[2]):.0f}", f"{us(lat[1]):.0f}", f"{us(lat[3]):.0f}",
                 f"{user + system:.2f}",
                 f"{100 * user / (user + system):.0f}", f"{100 * system / (user + system):.0f}",
-                f"{client:.0f}", str(nic), detail]))
+                f"{client:.0f}", str(nic), detail,
+                *(slept.split(",") if slept else [""] * 12)]))
 EOF
     tail -1 "$out/raw.csv"
 }
@@ -389,7 +453,8 @@ run_conns() {
     local name=$1 conns=$2 rate=$3 rep=$4
     local tag="$name-${conns}c-${rate}rps-$rep"
     local threads=$((conns < client_threads ? conns : client_threads))
-    local url="http://$target_ip:$port/"
+    # Quoted for the client's shell, as in run_one.
+    local url="'http://$target_ip:$port${URL_PATH:-/}'"
 
     local pid
     pid=$(on_server "$agent start $server_cpus $(server_path "$name") $log_dir/$tag.log PORT=$port $(server_env "$name") ${SERVER_ENV:-}")
@@ -413,7 +478,7 @@ run_conns() {
     local run_warmup=$((conns / 2500 > warmup ? conns / 2500 : warmup))
     local pace="-m 8 --rps $rate"
     [[ $rate == max ]] && pace="-m 1"
-    on_client "ulimit -n \$(ulimit -Hn); timeout -s KILL $((run_warmup + duration + 30)) taskset -c $client_cpus h2load -t $threads -c $conns $pace --warm-up-time ${run_warmup}s -D $duration $url" \
+    on_client "ulimit -n \$(ulimit -Hn); timeout -s KILL $((run_warmup + duration + 30)) taskset -c $client_cpus h2load -t $threads -c $conns $pace $post --warm-up-time ${run_warmup}s -D $duration $url" \
         > "$out/raw/$tag.h2load.txt" 2>&1 &
     local load=$!
     sleep "$run_warmup"
@@ -496,6 +561,11 @@ done
 
 {
     python3 -I "$root/bench/summarize.py" "$out/raw.csv"
+    if [[ -n ${COUNT:-} && $mode != conns ]]; then
+        python3 -I "$root/bench/counts.py" "$out" > "$out/counts.txt"
+        echo
+        cat "$out/counts.txt"
+    fi
     if [[ -f $out/events.txt ]]; then
         echo
         echo "Runs left out:"
