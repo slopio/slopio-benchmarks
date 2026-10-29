@@ -1,0 +1,7 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio               850,650     ±0%      274us    1.86ms          0.88     53/47          49%       0            
+        16 x 16  hyper                260,769     ±0%      968us    1.70ms          0.94     65/35          18%       0            
+        16 x 16  h2o                1,083,119     ±0%      216us     638us          0.93     51/49          58%       0            
+
+Medians of 1 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
