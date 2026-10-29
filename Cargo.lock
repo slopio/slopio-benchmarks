@@ -540,7 +540,7 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 [[package]]
 name = "slopio-h2"
 version = "0.1.0"
-source = "git+ssh://git@github.com/slopio/slopio-h2.git#d6275650809b9a1abe96ee10def74388e24aea5f"
+source = "git+ssh://git@github.com/slopio/slopio-h2.git#c934805171bf5a962a31d681b3420bd068878667"
 dependencies = [
  "fnv",
  "matchit",
