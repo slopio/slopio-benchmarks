@@ -149,19 +149,23 @@ server core, slopio went from 1.03M req/s with 4 client threads to 0.66M with
 Two instances in one cluster placement group in `eu-west-1`: the server
 (`c8gn.medium`, one vCPU) and h2load (`c8gn.xlarge`, four). Both Graviton,
 so the binaries built here run there as they are, on Ubuntu 24.04 for its
-glibc. `infra/config.sh` sets the region, zone and types.
+glibc. They are Terraform's, in `infra/`: `variables.tf` sets the region,
+zone and types, `profiles/` other sizes, `cloud-init.yaml` what the
+instances get at boot.
 
 ```sh
-infra/up.sh                  # creates them; prints their addresses
-bench/bench.sh single aws    # builds here, copies to the server, runs from here
-infra/ssh.sh server          # a shell on either, if needed
-infra/down.sh                # deletes everything up.sh made
+terraform -chdir=infra init                 # once
+terraform -chdir=infra apply                # creates them; prints their addresses
+bench/bench.sh single aws                   # builds here, copies to the server, runs from here
+ssh -F infra/.state/ssh_config server       # a shell on either, if needed
+terraform -chdir=infra destroy              # deletes everything apply made
 ```
 
-They run, and are billed, until `infra/down.sh`. Everything is tagged
-`Project=slopio-bench`; `down.sh` removes all of it and says if anything
-billable is left. The SSH key and the addresses stay in `infra/.state/`,
-never committed. SSH is open to the address `up.sh` ran from only.
+Other sizes: `apply -var-file=profiles/zero-copy.tfvars`. They run, and are
+billed, until `destroy`. Everything is tagged `Project=slopio-bench`. The
+SSH key, the addresses and Terraform's state, which holds the key too, stay
+in `infra/`, never committed. SSH is open to the
+address `apply` ran from only (`-var ssh_cidr=...` otherwise).
 
 Small instances have a sustained bandwidth well under their peak, and spend
 credits above it: the summary's `net capped` column counts the runs during

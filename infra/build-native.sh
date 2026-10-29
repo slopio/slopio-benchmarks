@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Builds the servers on the client instance infra/up.sh made, for its own CPU,
-# and brings them back to target/native/:
+# Builds the servers on the client instance Terraform made (infra/), for its
+# own CPU, and brings them back to target/native/:
 #
 #   infra/build-native.sh
 #   SERVERS="slopio slopio-native h2o h2o-native" bench/bench.sh single aws
@@ -19,7 +19,7 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
 source "$root/infra/config.sh"
 if [[ ! -f $HOSTS ]]; then
-    echo "no instances: infra/up.sh first" >&2
+    echo "no instances: terraform -chdir=infra apply first" >&2
     exit 1
 fi
 source "$HOSTS"

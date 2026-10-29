@@ -1,0 +1,29 @@
+#cloud-config
+# Both instances, at first boot.
+
+# Nothing may upgrade packages in the middle of a run. bootcmd runs before
+# the packages below, so the apt timers never hold the lock.
+bootcmd:
+  - systemctl disable --now unattended-upgrades.service apt-daily.timer apt-daily-upgrade.timer || true
+
+# Let one h2load open tens of thousands of connections to one address and
+# port, and open them again run after run: every source port, TIME_WAIT ones
+# reused, and room in the kernel's queues for a burst of handshakes. Both
+# servers still listen with the same backlog of 1024.
+write_files:
+  - path: /etc/sysctl.d/90-slopio-bench.conf
+    content: |
+      net.ipv4.ip_local_port_range = 1024 65535
+      net.ipv4.tcp_tw_reuse = 1
+      net.core.somaxconn = 65535
+      net.ipv4.tcp_max_syn_backlog = 65535
+
+runcmd:
+  - sysctl --system
+
+package_update: true
+packages:
+  - nghttp2-client
+  - sysstat
+  - ethtool
+  - binutils

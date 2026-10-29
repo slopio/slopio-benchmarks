@@ -12,7 +12,7 @@
 # costs them: CPU, memory, latency.
 #
 # local: server and h2load on this machine, the server on the first CPUs and
-# h2load on the rest. aws: the server on the instance infra/up.sh made for
+# h2load on the rest. aws: the server on the instance Terraform made for
 # it, h2load on the other, both driven from here over SSH.
 #
 # Servers alternate within each repetition, so that drift on the machines
@@ -93,7 +93,7 @@ case $where in
     aws)
         source "$root/infra/config.sh"
         if [[ ! -f $HOSTS ]]; then
-            echo "no instances: infra/up.sh first" >&2
+            echo "no instances: terraform -chdir=infra apply first" >&2
             exit 1
         fi
         source "$HOSTS"

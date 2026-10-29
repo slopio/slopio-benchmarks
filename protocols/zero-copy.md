@@ -39,7 +39,7 @@ below has 16, 64 and 256.
 | server | `c8gn.4xlarge` | 50 Gbit/s sustained, baseline = peak: no burst credits to run out. The server runs on CPU 0 only (`SERVER_CPUS=0`). |
 | client | `c8gn.4xlarge` | the same 50 Gbit/s, and 16 vCPUs for h2load to receive it without being the limit. |
 
-`SERVER_TYPE=c8gn.4xlarge CLIENT_TYPE=c8gn.4xlarge infra/up.sh`, in one
+`terraform -chdir=infra apply -var-file=profiles/zero-copy.tfvars`, in one
 cluster placement group as always. $1.07/h each in eu-west-1: about $3 for
 the whole protocol.
 
@@ -151,8 +151,7 @@ run elsewhere, and that is the answer.
 
 ## After
 
-`infra/down.sh`, and check it says nothing is left. Results go to
-`RESULTS.md`; the threshold found, if any, to slopio-h2's `ZC_MIN_BATCH`
+`terraform -chdir=infra destroy`. Results go to `RESULTS.md`; the threshold found, if any, to slopio-h2's `ZC_MIN_BATCH`
 (marked provisional there), and the `may_hold` question back to
 slopio-h2: whether the server's flush should pass `true`, and whether a
 second send in flight would hide the wait for the notification.

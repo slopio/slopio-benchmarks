@@ -2,3 +2,6 @@
 /infra/.state/
 __pycache__/
 results/*/perf/
+/infra/.terraform/
+/infra/*.tfstate
+/infra/*.tfstate.*
