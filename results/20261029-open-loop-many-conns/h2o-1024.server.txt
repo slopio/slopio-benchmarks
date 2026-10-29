@@ -1,0 +1,7 @@
+1792267,syscalls:sys_enter_sendmsg 0,syscalls:sys_enter_writev 1792275,syscalls:sys_enter_read 0,syscalls:sys_enter_io_uring_enter 0,io_uring:io_uring_submit_req 0,io_uring:io_uring_complete 
+6836448 6679068 1793248356.006631771
+8722465 8525425 1793248362.150827328
+2.50 5.16 1793248356.010380698
+4.94 10.81 1793248362.154641433
+12320 12320 4576 1024
+4884 4884 2528 0

@@ -1,0 +1,14 @@
+    20.33%     0.50%  [k] handle_softirqs
+     9.50%     7.46%  [k] __arch_copy_from_user
+     3.19%     0.87%  [k] skb_release_data
+     1.44%     1.11%  [k] kmem_cache_free
+     1.24%     1.23%  [k] kfree
+     1.22%     1.22%  [k] __pi_memcpy_generic
+     1.01%     0.17%  [k] kmalloc_reserve
+     0.97%     0.83%  [k] kmem_cache_alloc_node_noprof
+     0.90%     0.08%  [k] tcp_data_queue
+     0.84%     0.81%  [k] arch_counter_get_cntvct
+     0.82%     0.04%  [k] tcp_stream_alloc_skb
+     0.81%     0.04%  [k] ip_rcv_finish_core
+     0.81%     0.56%  [k] tcp_wfree
+     0.80%     0.80%  [k] _raw_spin_lock

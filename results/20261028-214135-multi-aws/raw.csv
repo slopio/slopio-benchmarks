@@ -1,0 +1,9 @@
+server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail,slept_n,slept_asked_ms,slept_mean_ms,slept_p1_ms,slept_p50_ms,slept_p99_ms,slept_max_ms,slept_err_mean_ms,slept_early_pct,slept_err_p1_ms,slept_err_p50_ms,slept_err_p99_ms
+slopio,64,32,1,375731.25,3005850,0,0,5490,10320,901,3.82,35,65,13,0,,,,,,,,,,,,,
+slopio-hash,64,32,1,361479.62,2891837,0,0,5690,9440,574,3.82,34,66,12,0,,,,,,,,,,,,,
+hyper-reuseport,64,32,1,292192.50,2337540,0,0,7030,22660,1170,3.82,46,54,7,0,,,,,,,,,,,,,
+h2o,64,32,1,272557.38,2180459,0,0,7550,33910,1830,3.83,62,38,6,0,,,,,,,,,,,,,
+slopio,64,32,2,372382.38,2979059,0,0,5540,9490,793,3.82,35,65,13,0,,,,,,,,,,,,,
+slopio-hash,64,32,2,363289.00,2906312,0,0,5720,10300,1110,3.83,35,65,13,0,,,,,,,,,,,,,
+hyper-reuseport,64,32,2,288612.12,2308897,0,0,7160,22470,1240,3.82,47,53,7,0,,,,,,,,,,,,,
+h2o,64,32,2,270377.12,2163017,0,0,7590,37540,1550,3.82,62,38,5,0,,,,,,,,,,,,,

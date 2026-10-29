@@ -1,0 +1,3 @@
+server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail,slept_n,slept_asked_ms,slept_mean_ms,slept_p1_ms,slept_p50_ms,slept_p99_ms,slept_max_ms,slept_err_mean_ms,slept_early_pct,slept_err_p1_ms,slept_err_p50_ms,slept_err_p99_ms
+slopio,16,16,1,46879.60,234398,0,0,5450,13610,491,0.62,17,83,44,1651423,bw_out=1651423,,,,,,,,,,,,
+slopio-zc,16,16,1,47150.20,235751,0,0,5390,103110,10250,0.50,15,85,40,1502684,bw_out=1502684,,,,,,,,,,,,

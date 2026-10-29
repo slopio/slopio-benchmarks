@@ -1,0 +1,30 @@
+     8.88%  [.] <slopio_h2::shared::codec::frames::headers::Headers>::load_hpack
+     7.44%  [.] slopio_h2::server::connection::shared_with_streams::retire_if_closed
+     5.99%  [.] <slopio_h2::shared::codec::frames::headers::HeaderBlock>::load::{closure#0}
+     5.73%  [.] <slopio_h2::server::stream::Stream>::write_data_final::{closure#0}
+     5.22%  [.] <slopio_h2::shared::hpack::decoder::Table>::get
+     4.94%  [.] <slopio_h2::shared::connection::shared_connection::SharedConnection>::write_response
+     4.92%  [.] mi_free
+     4.87%  [.] <runtime_core::bytes::origin::Origin>::release
+     4.15%  [.] <slopio_h2::server::router::Router as slopio_h2::server::handler::Handler>::start
+     3.02%  [.] <alloc::rc::Rc<slopio_h2::server::stream::StreamState>>::drop_slow
+     2.57%  [.] <slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router> as slopio_h2::shared::codec::frames::FrameHandler>::on_headers
+     2.35%  [.] _mi_page_malloc
+     2.24%  [.] 0x00000000000a1c3c
+     2.22%  [.] <slopio_h2::shared::hpack::header::Header as core::clone::Clone>::clone
+     2.16%  [.] 0x00000000000a1c34
+     1.97%  [.] <slopio_h2::server::connection::shared_with_streams::StreamToken as core::ops::drop::Drop>::drop
+     1.96%  [.] slopio_server::routes::payload::{closure#0}
+     1.74%  [.] <runtime_http::header::map::HeaderMap>::insert::<runtime_http::header::name::HeaderName>
+     1.73%  [.] mi_heap_malloc_aligned_at
+     1.44%  [.] slopio_h2::shared::codec::frames::dispatch_frame::<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>>
+     1.33%  [.] <slopio_h2::server::stream::StreamState>::create
+     1.26%  [.] core::ptr::drop_glue::<slopio_h2::shared::codec::frames::headers::Pseudo>
+     0.99%  [.] runtime_core::task::inner_parts::typed_task::poll::<slopio_h2::server::handler::ContainPanic<<slopio_h2::server::handler::Incoming>::spawn<<slopio_h2::server::router::Router>::route<slopio_server::routes::payload, slopio_server::routes::payload::{closure#0}>::{closure#0}::{closure#0}, slopio_server::routes::payload::{closure#0}>::{closure#0}>>
+     0.98%  [.] 0x00000000000a1c40
+     0.93%  [.] mi_malloc_aligned
+     0.88%  [.] 0x00000000000a1c38
+     0.82%  [.] <slopio_h2::shared::connection::stream_map::StreamMap<slopio_h2::server::stream::StreamState, runtime_core::task::handle::Handle<()>>>::insert
+     0.79%  [.] runtime_core::runtime::now
+     0.75%  [.] <alloc::raw_vec::RawVecInner>::finish_grow
+     0.73%  [.] <runtime_http::header::name::HeaderName as core::cmp::PartialEq<&str>>::eq

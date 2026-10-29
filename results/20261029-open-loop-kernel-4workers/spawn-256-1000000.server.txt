@@ -1,0 +1,5 @@
+0,syscalls:sys_enter_sendmsg 0,syscalls:sys_enter_writev 0,syscalls:sys_enter_read 516272,syscalls:sys_enter_io_uring_enter 4274578,io_uring:io_uring_submit_req 8308455,io_uring:io_uring_complete 
+120724686 104205284 1793247439.004609640
+127616375 109412459 1793247445.157045241
+7.00 17.46 1793247439.008232570
+12.98 33.83 1793247445.160634090

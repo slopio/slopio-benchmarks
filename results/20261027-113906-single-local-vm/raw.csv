@@ -1,0 +1,4 @@
+server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail,slept_n,slept_asked_ms,slept_mean_ms,slept_p1_ms,slept_p50_ms,slept_p99_ms,slept_max_ms
+slopio,16,16,1,10676.00,42704,0,0,23680,28910,2940,0.12,68,32,12,0,,42960,20.00,22.06,11.25,22.25,26.65,27.81
+hyper,16,16,1,10252.00,41008,0,0,24830,30750,1850,0.12,54,46,12,0,,42113,20.00,22.53,20.45,22.25,26.15,26.54
+h2o,16,16,1,11200.00,44800,0,0,22710,27260,1400,0.11,76,24,12,0,,44929,20.00,21.23,19.25,20.75,24.65,24.97

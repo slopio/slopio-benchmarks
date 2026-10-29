@@ -1,0 +1,34 @@
+     8.44%  [.] <slopio_h2::shared::connection::shared_connection::SharedConnection>::write_response
+     7.07%  [.] mi_malloc
+     5.36%  [.] <slopio_h2::shared::codec::frames::headers::Headers>::load_hpack
+     4.64%  [.] <slopio_h2::server::router::Router as slopio_h2::server::handler::Handler>::start
+     4.61%  [.] slopio_h2::server::connection::shared_with_streams::retire_if_closed
+     4.45%  [.] <slopio_h2::shared::codec::frames::headers::HeaderBlock>::load::{closure#0}
+     3.64%  [.] <runtime_http::header::map::HeaderMap>::insert::<runtime_http::header::name::HeaderName>
+     3.58%  [.] <slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router> as slopio_h2::shared::codec::frames::FrameHandler>::on_headers
+     3.45%  [.] runtime_core::task::inner_parts::typed_task::poll::<slopio_h2::server::handler::ContainPanic<<slopio_h2::server::handler::Incoming>::spawn<<slopio_h2::server::router::Router>::route<slopio_server::routes::payload, slopio_server::routes::payload::{closure#0}>::{closure#0}::{closure#0}, slopio_server::routes::payload::{closure#0}>::{closure#0}>>
+     2.92%  [.] mi_free
+     2.79%  [.] <core::future::poll_fn::PollFn<<slopio_h2::shared::connection::shared_connection::SharedConnection>::write_data<slopio_h2::server::stream::StreamState>::{closure#0}> as core::future::future::Future>::poll
+     2.55%  [.] 0x00000000000a1c3c
+     2.47%  [.] <runtime_core::bytes::origin::Origin>::release
+     2.37%  [.] <slopio_h2::server::stream::Stream>::write_data_final::{closure#0}
+     2.25%  [.] slopio_h2::shared::codec::frames::dispatch_frame::<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>>
+     2.11%  [.] <slopio_h2::shared::connection::stream_map::StreamMap<slopio_h2::server::stream::StreamState, runtime_core::task::handle::Handle<()>>>::insert
+     1.72%  [.] <alloc::rc::Rc<slopio_h2::server::stream::StreamState>>::drop_slow
+     1.58%  [.] 0x00000000000a1c34
+     1.52%  [.] slopio_h2::shared::hpack::encoder::encode_str
+     1.43%  [.] slopio_h2::shared::hpack::decoder::get_static
+     1.38%  [.] <slopio_h2::shared::connection::output::Output>::open
+     1.29%  [.] <slopio_h2::shared::hpack::header::Header as core::clone::Clone>::clone
+     1.24%  [.] <slopio_h2::server::stream::StreamState as slopio_h2::shared::connection::shared_connection::SendSide>::note_sent
+     1.18%  [.] <slopio_h2::server::stream::StreamState>::create
+     1.04%  [.] runtime_core::runtime::now
+     1.03%  [.] <alloc::raw_vec::RawVecInner>::finish_grow
+     0.99%  [.] 0x00000000000a1c40
+     0.99%  [.] <alloc::raw_vec::RawVec<slopio_h2::shared::hpack::decoder::Entry>>::grow_one
+     0.96%  [.] <slopio_h2::shared::codec::frames::FrameDecoder>::decode_with::<slopio_h2::server::connection::protocol::Protocol<slopio_h2::server::router::Router>>
+     0.93%  [.] slopio_server::main
+     0.91%  [.] <slopio_h2::server::router::Router>::route::<slopio_server::routes::payload, slopio_server::routes::payload::{closure#0}>::{closure#0}
+     0.82%  [.] core::ptr::drop_glue::<slopio_h2::shared::codec::frames::headers::Pseudo>
+     0.77%  [.] 0x00000000000a1c38
+     0.70%  [.] <slopio_h2::server::connection::shared_with_streams::StreamToken as core::ops::drop::Drop>::drop

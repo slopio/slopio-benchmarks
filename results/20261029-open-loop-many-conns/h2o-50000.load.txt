@@ -1,0 +1,3 @@
+300392 req/s (asked 300000), 50000 conns, 16 threads: 3604708 done, 0 failed, 615 MB/s | latency ms p50 0.120 p90 0.176 p99 0.240 p99.9 0.448 max 0.769
+  client CPU: 16.01 cores (88% user), 53.30 µs per request (pacers spin: not the cost of the requests)
+  client lag, due to sent: p50 0.002 p99 0.016 p99.9 0.040 max 0.536 ms

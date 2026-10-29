@@ -1,0 +1,18 @@
+  conns req/s each     asked  server              req/s    open   lat mean   lat max  cores machine   irq       RSS per conn kernel TCP  client  failed  runs  net capped
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  20000          1    20,000  slopio             20,000  20,000   128.12ms  301.87ms   0.23    0.27  0.10    247.3M    10.9K       0.2M      3%       0     2            
+  20000          1    20,000  hyper              20,000  20,000   238.69ms  346.21ms   0.34    0.37  0.09    545.5M    27.8K       1.0M      2%       0     2            
+  20000          1    20,000  h2o                19,992  19,992   108.35ms  311.20ms   0.23    0.25  0.10     98.7M     4.8K       0.2M      3%       0     2            
+
+  20000          5   100,000  slopio             48,808   9,762    36.59ms   74.42ms   0.54    0.58  0.20    137.9M    10.8K      11.4M      6%       0     2            
+  20000          5   100,000  hyper              43,800   8,759    74.21ms  116.08ms   0.78    0.82  0.20    235.1M    27.2K       5.9M      5%       0     2            
+  20000          5   100,000  h2o                45,942   9,188    29.98ms   68.73ms   0.50    0.54  0.19     48.6M     4.9K       1.9M      6%       0     2            
+
+  20000        max       max  slopio             82,002  19,566   249.09ms 8080.26ms   0.99    1.00  0.34    234.9M    10.5K      76.0M      8%       0     2            
+  20000        max       max  hyper              53,930  20,000   371.60ms  482.00ms   1.00    1.00  0.24    540.5M    27.5K      35.5M      6%       0     2            
+
+machine: the server machine's CPUs busy, every one, the kernel's network work included, which cores (the server process alone) leaves out; irq: how much of it went to interrupts and softirqs. Both count the client too when it runs on the same machine. Medians of each case's runs; runs: how many there were, fewer when some were left out (see below). asked: connections times the rate each, what h2load aimed for; max: each connection sends its next request as soon as it has the answer. open: connections established, read half way through. cores: the server's CPU time per second. RSS: the server's resident memory under the load; per conn: what it grew by from idle, over the connections open. kernel TCP: what the machine's TCP buffers grew by, both ends if the client runs there too. client: the load generator's CPUs. Latency at a fixed rate: h2load sends every connection's request at the same instant, so it is the time to answer a burst of as many requests as there are connections.
+
+Runs left out:
+h2o-20000c-maxrps-1: h2load printed no figures (killed after hanging); run left out
+h2o-20000c-maxrps-2: h2load printed no figures (killed after hanging); run left out

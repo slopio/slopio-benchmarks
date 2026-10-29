@@ -1,0 +1,12 @@
+     8.34%     6.68%  [k] __arch_copy_from_user
+     4.66%     0.73%  [k] ena_clean_tx_irq
+     4.34%     0.39%  [k] vfs_read
+     2.58%     0.25%  [k] tcp_gso_segment
+     2.16%     1.73%  [k] __pi_clear_page
+     1.57%     1.57%  [k] __pi_memcpy_generic
+     1.54%     1.22%  [k] kmem_cache_free
+     1.35%     1.32%  [k] kfree
+     1.34%     1.22%  [k] _raw_spin_unlock_irqrestore
+     1.05%     0.92%  [k] kmem_cache_alloc_node_noprof
+     0.95%     0.76%  [k] __arch_copy_to_user
+     0.89%     0.85%  [k] arch_counter_get_cntvct

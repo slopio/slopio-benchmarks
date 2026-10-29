@@ -1,0 +1,40 @@
+starting benchmark...
+spawning thread #0: 4 total client(s). Timing-based test with 0s of warm-up time and 5s of main duration for measurements.
+spawning thread #1: 4 total client(s). Timing-based test with 0s of warm-up time and 5s of main duration for measurements.
+spawning thread #2: 4 total client(s). Timing-based test with 0s of warm-up time and 5s of main duration for measurements.
+spawning thread #3: 4 total client(s). Timing-based test with 0s of warm-up time and 5s of main duration for measurements.
+Warm-up started for thread #1.
+Warm-up started for thread #3.
+Warm-up started for thread #0.
+Warm-up phase is over for thread #progress: 25% of clients started
+Warm-up phase is over for thread #3.
+Warm-up started for thread #2.
+Main benchmark duration is started for thread #3.
+progress: 50% of clients started
+progress: 175% of clients started
+Warm-up phase is over for thread #2.
+Main benchmark duration is started for thread #2.
+progress: 100% of clients started
+Warm-up phase is over for thread #0.
+Main benchmark duration is started for thread #0.
+Application protocol: h2c
+.
+Main benchmark duration is started for thread #1.
+Main benchmark duration is over for thread #0. Stopping all clients.
+Stopped all clients for thread #0
+Main benchmark duration is over for thread #1. Stopping all clients.
+Stopped all clients for thread #1
+Main benchmark duration is over for thread #3. Stopping all clients.
+Stopped all clients for thread #3
+Main benchmark duration is over for thread #2. Stopping all clients.
+Stopped all clients for thread #2
+
+finished in 5.00s, 40872.20 req/s, 80.84MB/s
+requests: 204361 total, 204617 started, 204361 done, 204361 succeeded, 0 failed, 0 errored, 0 timeout
+status codes: 204361 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 404.21MB (423845722) total, 1.56MB (1635016) headers (space savings 84.00%), 399.14MB (418531328) data
+                     min         max         mean         sd        +/- sd
+time for request:     1.14ms     11.35ms      6.25ms      2.61ms    60.91%
+time for connect:       22us       170us        84us        44us    75.00%
+time to 1st byte:     2.69ms      3.09ms      2.83ms       125us    62.50%
+req/s           :    2521.73     2569.65     2554.31       11.93    75.00%

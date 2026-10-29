@@ -1,0 +1,11 @@
+     7.85%     6.39%  [k] __arch_copy_from_user
+     2.83%     0.03%  [k] validate_xmit_skb_list
+     2.53%     2.01%  [k] __pi_clear_page
+     1.87%     1.87%  [k] __pi_memcpy_generic
+     1.41%     0.47%  [k] skb_segment
+     1.34%     0.30%  [k] ena_com_prepare_tx
+     1.12%     1.09%  [k] kfree
+     1.04%     0.96%  [k] _raw_spin_unlock_irqrestore
+     1.03%     0.16%  [k] kmalloc_reserve
+     0.96%     0.85%  [k] kmem_cache_alloc_node_noprof
+     0.93%     0.86%  [k] arch_counter_get_cntvct

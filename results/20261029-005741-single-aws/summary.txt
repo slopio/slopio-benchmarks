@@ -1,0 +1,13 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        64 x 32  slopio-prev           32,896     ±0%    62.08ms  101.37ms          0.86      97/3           0%       0            
+        64 x 32  slopio                33,703     ±0%    60.49ms  143.56ms          0.90      96/4           0%       0            
+
+Medians of 2 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
+
+conns x streams  server               asked     slept  err mean    err p1   err p50   err p99       max  early  lat - slept
+---------------------------------------------------------------------------------------------------------------------------
+        64 x 32  slopio-prev        19.99ms   32.81ms   12.83ms  -12.70ms   12.95ms   36.75ms   66.38ms  14.6%      29.26ms
+        64 x 32  slopio             19.99ms   30.81ms   10.81ms  -14.05ms   10.55ms   37.95ms   74.81ms  20.7%      29.68ms
+
+How long each server's waits on /app really took, on its own clock, over the measured run: asked and slept on average, and at most. err: how far each sleep was from what it asked, slept minus asked, negative when it ended early: on average, and at the 1st, 50th and 99th percentiles (to 100 µs); early: the share of sleeps that ended before their time. Medians of the runs. Each sleeps on its own runtime's timer: slopio's ticks every 10 ms, tokio's and h2o's every millisecond. h2load keeps as many requests in flight as it has streams, so a server that sleeps less answers more per second for it: lat - slept, the mean latency less the mean sleep, is what the server itself took.

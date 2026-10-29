@@ -1,0 +1,14 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        64 x 32  slopio                77,802     ±0%    26.26ms   42.52ms          0.94     14/86          13%       0            
+        64 x 32  slopio-zc             89,454     ±0%    22.84ms  144.13ms          0.93     15/85          16%       0         1/1
+
+Medians of 1 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
+
+conns x streams  server             user us      sys us     instr u       IPC u     instr k       IPC k  L1i miss u   br miss u    syscalls uring enter        SQEs        CQEs    ZC sends       reads      writes epoll waits      ctx sw     segs in    segs out
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        64 x 32  slopio                1.69       10.39       9,177        1.99      80,108        2.78       42.31       16.15        0.01        0.01        0.31        0.47        0.00        0.00        0.00        0.00        0.00        0.99        6.68
+        64 x 32  slopio-zc             1.56        8.84       9,259        2.02      74,168        3.05       50.31       16.65        0.01        0.01        0.31        0.73        0.25        0.00        0.00        0.00        0.00        1.08        7.00
+
+Per request, medians of each server's runs. user us, sys us: the server's CPU time. instr, IPC: instructions and instructions per cycle, u in the server's own code, k in the kernel on its behalf. L1i miss, br miss: instruction cache refills and mispredicted branches in its own code. syscalls: all of them; reads, writes, epoll waits: those of each kind; SQEs, CQEs: io_uring submissions and completions; ZC sends: those submitted as SENDMSG_ZC. Counts are the server process's: the kernel's network work in interrupts and softirqs is not in them.
+segs in, segs out: the server machine's TCP segments.

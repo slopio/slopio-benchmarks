@@ -1,0 +1,1 @@
+hyper-server on :18080 (h2c), mode=Single, threads=1, max_streams=64, stream_window=1048576, incoming_cpu=false

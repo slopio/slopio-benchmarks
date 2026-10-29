@@ -1,0 +1,16 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio                23,241     ±0%    11.00ms   18.67ms          0.94     33/67           4%       0            
+        16 x 16  hyper                 22,120     ±0%    11.55ms   48.98ms          0.94     38/62           3%       0            
+        16 x 16  h2o                   15,587     ±0%    16.40ms   43.79ms          0.94     59/41           2%       0            
+
+Medians of 1 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
+
+conns x streams  server             user us      sys us     instr u       IPC u     instr k       IPC k  L1i miss u   br miss u    syscalls uring enter        SQEs        CQEs    ZC sends       reads      writes epoll waits      ctx sw     segs in    segs out
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio               13.35       27.10      91,738        2.49     115,950        1.53         387       39.08        0.19        0.19        1.10        2.14        0.00        0.00        0.00        0.00        0.00        2.86        1.05
+        16 x 16  hyper                16.15       26.35     104,511        2.34     128,559        1.70         652       47.50        8.97        0.00        0.00        0.00        0.00        7.97        0.98        0.02        0.00        1.48        0.66
+        16 x 16  h2o                  35.58       24.73     296,353        3.01      93,284        1.30         137       22.88        0.96        0.00        0.00        0.00        0.00        0.82        0.12        0.01        0.00        1.36        0.40
+
+Per request, medians of each server's runs. user us, sys us: the server's CPU time. instr, IPC: instructions and instructions per cycle, u in the server's own code, k in the kernel on its behalf. L1i miss, br miss: instruction cache refills and mispredicted branches in its own code. syscalls: all of them; reads, writes, epoll waits: those of each kind; SQEs, CQEs: io_uring submissions and completions; ZC sends: those submitted as SENDMSG_ZC. Counts are the server process's: the kernel's network work in interrupts and softirqs is not in them.
+segs in, segs out: the server machine's TCP segments.

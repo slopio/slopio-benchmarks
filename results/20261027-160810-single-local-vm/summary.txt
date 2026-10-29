@@ -1,0 +1,15 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio                20,627     ±0%    12.29ms   18.48ms          0.13     51/49          13%       0            
+        16 x 16  hyper                 40,872     ±0%     6.25ms   11.37ms          0.22     40/60          13%       0            
+        16 x 16  h2o                   49,538     ±0%     5.16ms   10.22ms          0.14     36/64          13%       0            
+
+Medians of 2 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
+
+conns x streams  server               asked     slept  err mean    err p1   err p50   err p99       max  early  lat - slept
+---------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio              4.99ms   11.18ms    6.19ms   -4.10ms    6.30ms   11.65ms   15.01ms   1.9%       1.11ms
+        16 x 16  hyper               5.00ms    6.03ms    1.04ms    0.15ms    1.05ms    1.85ms   11.05ms   0.0%        220us
+        16 x 16  h2o                 5.00ms    5.04ms    0.04ms   -0.85ms    0.05ms    0.85ms   10.02ms  40.4%        120us
+
+How long each server's waits on /app really took, on its own clock, over the measured run: asked and slept on average, and at most. err: how far each sleep was from what it asked, slept minus asked, negative when it ended early: on average, and at the 1st, 50th and 99th percentiles (to 100 µs); early: the share of sleeps that ended before their time. Medians of the runs. Each sleeps on its own runtime's timer: slopio's ticks every 10 ms, tokio's and h2o's every millisecond. h2load keeps as many requests in flight as it has streams, so a server that sleeps less answers more per second for it: lat - slept, the mean latency less the mean sleep, is what the server itself took.

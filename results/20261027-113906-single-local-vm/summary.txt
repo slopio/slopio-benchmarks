@@ -1,0 +1,15 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio                10,676     ±0%    23.68ms   28.91ms          0.12     68/32          12%       0            
+        16 x 16  hyper                 10,252     ±0%    24.83ms   30.75ms          0.12     54/46          12%       0            
+        16 x 16  h2o                   11,200     ±0%    22.71ms   27.26ms          0.11     76/24          12%       0            
+
+Medians of 1 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
+
+conns x streams  server              asked    slept       p1      p50      p99      max
+---------------------------------------------------------------------------------------
+        16 x 16  slopio            20.00ms  22.06ms  11.25ms  22.25ms  26.65ms  27.81ms
+        16 x 16  hyper             20.00ms  22.53ms  20.45ms  22.25ms  26.15ms  26.54ms
+        16 x 16  h2o               20.00ms  21.23ms  19.25ms  20.75ms  24.65ms  24.97ms
+
+How long each server's waits on /app really took, on its own clock, over the measured run: asked, and slept on average, at the 1st, 50th and 99th percentiles (to 100 µs) and at most; medians of the runs. Each sleeps on its own runtime's timer: slopio's ticks every 10 ms, tokio's and h2o's every millisecond.

@@ -1,0 +1,5 @@
+hyper-server on :18080 (h2c), mode=Reuseport, threads=4, max_streams=64, stream_window=1048576, incoming_cpu=true
+worker on CPU 1: 123 accepted, 123 arrived on this CPU
+worker on CPU 0: 135 accepted, 135 arrived on this CPU
+worker on CPU 2: 125 accepted, 125 arrived on this CPU
+worker on CPU 3: 129 accepted, 129 arrived on this CPU

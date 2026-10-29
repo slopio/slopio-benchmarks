@@ -1,0 +1,7 @@
+1802214,syscalls:sys_enter_sendmsg 0,syscalls:sys_enter_writev 1802208,syscalls:sys_enter_read 0,syscalls:sys_enter_io_uring_enter 0,io_uring:io_uring_submit_req 0,io_uring:io_uring_complete 
+32062298 26042362 1793248436.400786394
+35239764 27884905 1793248442.533465971
+3.64 7.83 1793248436.404458855
+7.38 16.16 1793248442.537114353
+81896 81896 19932 16384
+4884 4884 3552 0

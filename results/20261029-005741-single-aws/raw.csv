@@ -1,0 +1,5 @@
+server,conns,streams,rep,rps,succeeded,failed,errored,lat_mean_us,lat_max_us,lat_sd_us,server_cores,server_user_pct,server_sys_pct,client_busy_pct,nic_exceeded,nic_detail,slept_n,slept_asked_ms,slept_mean_ms,slept_p1_ms,slept_p50_ms,slept_p99_ms,slept_max_ms,slept_err_mean_ms,slept_early_pct,slept_err_p1_ms,slept_err_p50_ms,slept_err_p99_ms
+slopio-prev,64,32,1,33024.00,264192,0,0,61820,82130,7450,0.87,97,3,0,0,,298079,19.98,32.69,2.65,33.25,60.75,65.12,12.71,14.7,-12.75,12.85,36.55
+slopio,64,32,1,33731.12,269849,0,0,60300,129600,13910,0.90,96,4,0,0,,256854,19.99,30.51,1.95,30.75,62.55,74.64,10.52,21.0,-14.15,10.25,37.65
+slopio-prev,64,32,2,32767.75,262142,0,0,62330,120610,7020,0.86,97,3,0,0,,250654,20.00,32.94,2.65,33.55,60.95,67.64,12.95,14.4,-12.65,13.05,36.95
+slopio,64,32,2,33674.00,269392,0,0,60690,157520,13650,0.89,96,4,0,0,,255671,20.00,31.11,2.15,31.45,62.95,74.97,11.11,20.4,-13.95,10.85,38.25

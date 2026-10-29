@@ -1,0 +1,18 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        16 x 16  slopio             2,035,686     ±1%      120us     464us          2.13     58/42          14%       0            
+        16 x 16  slopio-hash        1,912,635     ±0%      126us     398us          2.54     46/54          14%       0            
+        16 x 16  hyper-reuseport      938,903     ±1%      282us     720us          3.62     64/36           9%       0            
+        16 x 16  h2o                2,335,414     ±1%      104us     468us          2.16     54/46          16%       0            
+
+        64 x 32  slopio             3,437,396     ±0%      584us    2.08ms          3.82     52/48          28%       0            
+        64 x 32  slopio-hash        3,175,145     ±1%      672us    2.97ms          3.82     49/51          25%       0            
+        64 x 32  hyper-reuseport    1,056,288     ±0%     1.96ms    3.31ms          3.83     70/30           7%       0            
+        64 x 32  h2o                4,628,634     ±0%      424us    1.06ms          3.82     54/46          30%       0            
+
+       256 x 16  slopio             2,442,410     ±0%     1.62ms    4.43ms          3.83     46/54          28%       0            
+       256 x 16  slopio-hash        2,292,020     ±0%     1.73ms    5.22ms          3.83     42/58          27%       0            
+       256 x 16  hyper-reuseport      994,662     ±0%     4.09ms    6.01ms          3.83     67/33           8%       0            
+       256 x 16  h2o                4,205,259     ±0%      952us    2.21ms          3.83     50/50          29%       0            
+
+Medians of 2 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.

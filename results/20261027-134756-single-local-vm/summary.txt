@@ -1,0 +1,23 @@
+conns x streams  server                 req/s  spread   lat mean   lat max  server cores  user/sys  client busy  failed  net capped
+-----------------------------------------------------------------------------------------------------------------------------------
+        64 x 32  slopio-prev           28,672     ±1%    70.82ms   93.27ms          0.73      98/2          12%       0            
+        64 x 32  slopio                29,355     ±2%    69.46ms   95.20ms          0.73      98/2          12%       0            
+        64 x 32  h2o                   39,125     ±0%    52.17ms   99.99ms          0.99      98/2          12%       0            
+
+       256 x 16  slopio-prev           34,133     ±0%   118.82ms  131.17ms          0.88      97/3          12%       0            
+       256 x 16  slopio                34,475     ±1%   118.03ms  207.81ms          0.88      97/3          12%       0            
+       256 x 16  h2o                   39,045     ±1%   104.50ms  194.70ms          1.00      97/3          12%       0            
+
+Medians of 3 runs. spread: half the range of req/s over the median. server cores: CPU time used per second of wall time. client busy: the load generator's CPUs. net capped: runs during which the NIC queued or dropped packets for going past the instance's allowance; their req/s measured AWS's limit.
+
+conns x streams  server              asked    slept       p1      p50      p99      max  lat - slept
+----------------------------------------------------------------------------------------------------
+        64 x 32  slopio-prev       20.00ms  44.29ms  14.45ms  44.05ms  72.65ms  78.95ms      26.53ms
+        64 x 32  slopio            20.00ms  43.21ms  14.05ms  43.05ms  71.05ms  76.17ms      26.25ms
+        64 x 32  h2o               20.00ms  36.06ms  22.65ms  36.25ms  50.15ms  62.12ms      16.11ms
+
+       256 x 16  slopio-prev       20.00ms  63.88ms  16.05ms  62.85ms 118.55ms 125.11ms      54.94ms
+       256 x 16  slopio            20.00ms  63.31ms  15.65ms  62.45ms 117.55ms 125.13ms      54.72ms
+       256 x 16  h2o               20.00ms  69.34ms  25.05ms  73.05ms  98.95ms 109.51ms      35.16ms
+
+How long each server's waits on /app really took, on its own clock, over the measured run: asked, and slept on average, at the 1st, 50th and 99th percentiles (to 100 µs) and at most; medians of the runs. Each sleeps on its own runtime's timer: slopio's ticks every 10 ms, tokio's and h2o's every millisecond. h2load keeps as many requests in flight as it has streams, so a server that sleeps less answers more per second for it: lat - slept, the mean latency less the mean sleep, is what the server itself took.

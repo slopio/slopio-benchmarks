@@ -1,0 +1,5 @@
+3555622,syscalls:sys_enter_sendmsg 0,syscalls:sys_enter_writev 3555634,syscalls:sys_enter_read 0,syscalls:sys_enter_io_uring_enter 0,io_uring:io_uring_submit_req 0,io_uring:io_uring_complete 
+107130145 92718280 1793247416.639558898
+110979926 96399520 1793247422.777420115
+5.06 10.95 1793247416.643163961
+9.47 21.63 1793247422.781177462
